@@ -1,10 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-group = "it.pagopa.walleteventdispatcher"
+group = "it.pagopa.wallet.eventdispatcher"
 
 version = "0.1.0"
 
-description = "pagopa-wallet-event-dispatcher"
+description = "pagopa-wallet-event-dispatcher-service"
 
 plugins {
   id("java")

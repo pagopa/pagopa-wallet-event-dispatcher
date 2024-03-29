@@ -3,7 +3,6 @@ version: '3.8'
 services:
   app:
     container_name: 'pagopa-wallet-eventdispatcher'
-    image: ${image}
     build:
       dockerfile: Dockerfile
       context: .
