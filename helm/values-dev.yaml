@@ -28,7 +28,7 @@ microservice-chart:
   ingress:
     create: true
     host: "weudev.wallet.internal.dev.platform.pagopa.it"
-    path: /pagopa-wallet-event-dispatcher-service/(.*) # TODO: set your path
+    path: /pagopa-wallet-event-dispatcher-service/(.*)
     servicePort: 8080
   serviceAccount:
     create: false
