@@ -24,6 +24,8 @@ java.sourceCompatibility = JavaVersion.VERSION_17
 
 tasks.withType<KotlinCompile> { kotlinOptions.jvmTarget = "17" }
 
+java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
+
 repositories { mavenCentral() }
 
 val ecsLoggingVersion = "1.5.0"
