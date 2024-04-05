@@ -5,8 +5,8 @@ import com.azure.core.util.serializer.JsonSerializerProvider
 import com.azure.core.util.serializer.TypeReference
 import com.azure.spring.messaging.AzureHeaders
 import com.azure.spring.messaging.checkpoint.Checkpointer
-import it.pagopa.wallet.eventdispatcher.domain.WalletEvent
 import it.pagopa.wallet.eventdispatcher.common.queue.QueueEvent
+import it.pagopa.wallet.eventdispatcher.domain.WalletEvent
 import org.slf4j.LoggerFactory
 import org.springframework.integration.annotation.ServiceActivator
 import org.springframework.messaging.handler.annotation.Header
