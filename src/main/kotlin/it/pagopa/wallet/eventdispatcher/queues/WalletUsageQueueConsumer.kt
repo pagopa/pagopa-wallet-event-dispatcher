@@ -31,16 +31,21 @@ class WalletUsageQueueConsumer(azureJsonSerializer: JsonSerializerProvider) {
         @Payload payload: ByteArray,
         @Header(AzureHeaders.CHECKPOINTER) checkPointer: Checkpointer
     ): Mono<Unit> {
-        println(BinaryData.fromBytes(payload).toString())
         return BinaryData.fromBytes(payload)
             .toObjectAsync(EVENT_TYPE_REFERENCE, azureSerializer)
             .doOnNext { logger.info("Received event {}", it) }
-            .then(
-                checkPointer
-                    .success()
-                    .doOnSuccess { logger.info("Checkpoint successfully") }
-                    .doOnError { logger.error("Error performing checkpoint", it) },
-            )
+            .map {}
+            .then(checkPointer.successWithLog())
+            .onErrorResume { error ->
+                logger.error("Failed to consumer event", error)
+                checkPointer.successWithLog()
+            }
+    }
+
+    private fun Checkpointer.successWithLog(message: String? = null): Mono<Unit> {
+        return this.success()
+            .doOnSuccess { logger.info(message ?: "Checkpoint successfully") }
+            .doOnError { logger.error("Error performing checkpoint", it) }
             .map {}
     }
 }
