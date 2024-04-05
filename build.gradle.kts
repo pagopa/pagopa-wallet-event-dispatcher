@@ -30,7 +30,7 @@ val ecsLoggingVersion = "1.5.0"
 
 dependencyManagement {
   imports { mavenBom("org.springframework.boot:spring-boot-dependencies:3.0.5") }
-  imports { mavenBom("com.azure.spring:spring-cloud-azure-dependencies:4.0.0") }
+  imports { mavenBom("com.azure.spring:spring-cloud-azure-dependencies:5.10.0") }
   // Kotlin BOM
   imports { mavenBom("org.jetbrains.kotlin:kotlin-bom:1.7.22") }
   imports { mavenBom("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.4") }
@@ -41,6 +41,16 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
   implementation("com.azure.spring:spring-cloud-azure-starter")
   implementation("com.azure.spring:spring-cloud-azure-starter-data-cosmos")
+
+  // spring integration
+  implementation("org.springframework.boot:spring-boot-starter-integration")
+
+  // azure
+  implementation("com.azure.spring:spring-cloud-azure-starter-storage-queue")
+  implementation("com.azure.spring:spring-cloud-azure-starter-integration-storage-queue")
+  implementation("com.azure:azure-storage-queue")
+  implementation("com.azure:azure-core-serializer-json-jackson")
+
   implementation("org.springframework.boot:spring-boot-starter-actuator")
   implementation("org.springframework.boot:spring-boot-starter-web-services")
   implementation("org.apache.httpcomponents:httpclient")
@@ -50,6 +60,8 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-aop")
   implementation("io.netty:netty-resolver-dns-native-macos:4.1.90.Final")
   implementation("io.vavr:vavr:0.10.4")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+
   // Kotlin dependencies
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
   implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")

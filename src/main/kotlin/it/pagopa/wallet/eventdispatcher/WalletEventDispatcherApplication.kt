@@ -2,8 +2,9 @@ package it.pagopa.wallet.eventdispatcher
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.integration.config.EnableIntegration
 
-@SpringBootApplication class EventDispatcherApplication
+@SpringBootApplication @EnableIntegration class EventDispatcherApplication
 
 fun main(args: Array<String>) {
     runApplication<EventDispatcherApplication>(*args)
