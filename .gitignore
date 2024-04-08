@@ -160,3 +160,5 @@ gradle-app.setting
 .env
 
 azurite/.data/
+
+.sdkmanrc

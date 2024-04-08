@@ -70,8 +70,13 @@ microservice-chart:
     OTEL_METRICS_EXPORTER: otlp
     OTEL_LOGS_EXPORTER: none
     OTEL_TRACES_SAMPLER: "always_on"
+    MONGO_HOST: pagopa-u-weu-wallet-cosmos-account.mongo.cosmos.azure.com
+    MONGO_USERNAME: pagopa-u-weu-wallet-cosmos-account
+    MONGO_PORT: "10255"
+    MONGO_SSL_ENABLED: "true"
   envSecret:
     OTEL_EXPORTER_OTLP_HEADERS: elastic-apm-secret-token
+    MONGO_PASSWORD: mongo-wallet-password
   keyvault:
     name: "pagopa-u-name-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
@@ -100,6 +105,22 @@ microservice-chart:
         repository: pagopadcommonacr.azurecr.io/pagopawalleteventdispatcher
         tag: "latest"
         pullPolicy: Always
-      envConfig: { }
-      envSecret: { }
+      envConfig:
+        ENV: 'uat'
+        APP_LOGGING_LEVEL: 'DEBUG'
+        DEFAULT_LOGGING_LEVEL: 'INFO'
+        OTEL_SERVICE_NAME: "pagopa-wallet-event-dispatcher-service"
+        OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=uat"
+        OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
+        OTEL_TRACES_EXPORTER: otlp
+        OTEL_METRICS_EXPORTER: otlp
+        OTEL_LOGS_EXPORTER: none
+        OTEL_TRACES_SAMPLER: "always_on"
+        MONGO_HOST: pagopa-u-weu-wallet-cosmos-account.mongo.cosmos.azure.com
+        MONGO_USERNAME: pagopa-u-weu-wallet-cosmos-account
+        MONGO_PORT: "10255"
+        MONGO_SSL_ENABLED: "true"
+      envSecret:
+        OTEL_EXPORTER_OTLP_HEADERS: elastic-apm-secret-token
+        MONGO_PASSWORD: mongo-wallet-password
 

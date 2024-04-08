@@ -34,6 +34,9 @@ dependencyManagement {
   // Kotlin BOM
   imports { mavenBom("org.jetbrains.kotlin:kotlin-bom:1.7.22") }
   imports { mavenBom("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.4") }
+
+  // OpenTelemetry BOM
+  imports { mavenBom("io.opentelemetry:opentelemetry-bom:1.36.0") }
 }
 
 dependencies {
@@ -62,6 +65,9 @@ dependencies {
   implementation("io.vavr:vavr:0.10.4")
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
+  // mongo
+  implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
+
   // Kotlin dependencies
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
   implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
@@ -71,6 +77,9 @@ dependencies {
 
   // ECS logback encoder
   implementation("co.elastic.logging:logback-ecs-encoder:$ecsLoggingVersion")
+
+  // OpenTelemetry
+  implementation("io.opentelemetry:opentelemetry-sdk")
 
   runtimeOnly("org.springframework.boot:spring-boot-devtools")
   testImplementation("org.springframework.boot:spring-boot-starter-test")

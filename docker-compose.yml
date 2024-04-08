@@ -13,6 +13,29 @@ services:
     networks:
       - pagopa-wallet-net
 
+  storage:
+    image: mcr.microsoft.com/azure-storage/azurite:3.29.0
+    container_name: azurite
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
+    volumes:
+      - $PWD/azurite/.data:/opt/azurite/folder
+    networks:
+      - pagopa-wallet-net
+
+  azurite-init:
+    container_name: azurite-init
+    build:
+      context: .
+      dockerfile: ./azurite/Dockerfile
+    depends_on:
+      - storage
+    env_file: ./docker/config/azurite-storage.env
+    networks:
+      - pagopa-wallet-net
+
 networks:
   pagopa-wallet-net:
     driver: bridge

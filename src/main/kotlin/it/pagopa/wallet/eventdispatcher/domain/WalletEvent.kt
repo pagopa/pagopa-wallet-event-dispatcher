@@ -11,4 +11,5 @@ data class WalletUsed(
     override val id: String,
     override val createdAt: Instant,
     val walletId: String,
+    val clientId: String
 ) : WalletEvent
