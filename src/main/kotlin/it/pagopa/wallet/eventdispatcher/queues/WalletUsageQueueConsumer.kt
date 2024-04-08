@@ -34,8 +34,7 @@ class WalletUsageQueueConsumer(azureJsonSerializer: JsonSerializerProvider) {
         return BinaryData.fromBytes(payload)
             .toObjectAsync(EVENT_TYPE_REFERENCE, azureSerializer)
             .doOnNext { logger.info("Received event {}", it) }
-            .map {}
-            .then(checkPointer.successWithLog())
+            .flatMap { checkPointer.successWithLog() }
             .onErrorResume { error ->
                 logger.error("Failed to consumer event", error)
                 checkPointer.successWithLog()
