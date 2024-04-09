@@ -10,6 +10,7 @@ stages:
   - stage: BuildEndUnitTest
     jobs:
       - job: make_buildEndUnitTest
+        displayName: Build service and Run Unit tests
         steps:
           - task: Cache@2
             inputs:
