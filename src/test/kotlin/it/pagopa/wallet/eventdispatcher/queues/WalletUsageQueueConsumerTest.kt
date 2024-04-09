@@ -31,10 +31,10 @@ class WalletUsageQueueConsumerTest {
 
     @Test
     fun `should consume a valid event and update checkpoint successfully`() {
-        val event = QueueEvent(WalletUsed("event_id", Instant.now(), "wallet_id"))
+        val event = "{\"data\":{\"eventId\":\"e7509ed7-dc8d-4089-8501-b01606c6ce43\",\"creationDate\":\"2024-04-09T15:52:12.500329Z\",\"walletId\":\"5063a549-a984-4dd3-8247-892751f7df56\",\"clientId\":\"CHECKOUT\",\"type\":\"WalletUsed\"},\"tracingInfo\":{\"traceparent\":\"mock_traceparent\",\"tracestate\":\"mock_tracestate\",\"baggage\":\"mock_baggage\"}}"
         consumer
             .messageReceiver(
-                BinaryData.fromString(objectMapper.writeValueAsString(event)).toBytes(),
+                BinaryData.fromString(event).toBytes(),
                 checkPointer
             )
             .test()
@@ -43,6 +43,8 @@ class WalletUsageQueueConsumerTest {
 
         verify(checkPointer, times(1)).success()
     }
+
+
 
     @Test
     fun `should checkpoint event even is event is malformed`() {
