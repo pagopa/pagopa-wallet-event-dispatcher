@@ -88,7 +88,7 @@ sourceSets {
 }
 
 springBoot {
-  mainClass.set("it.pagopa.walleteventdispatcher.WalletApplicationKt")
+  mainClass.set("it.pagopa.wallet.eventdispatcher.WalletEventDispatcherApplicationKt")
   buildInfo { properties { additional.set(mapOf("description" to project.description)) } }
 }
 

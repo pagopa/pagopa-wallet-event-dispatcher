@@ -3,8 +3,8 @@ package it.pagopa.wallet.eventdispatcher
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
-@SpringBootApplication class EventDispatcherApplication
+@SpringBootApplication class WalletEventDispatcherApplication
 
 fun main(args: Array<String>) {
-    runApplication<EventDispatcherApplication>(*args)
+    runApplication<WalletEventDispatcherApplication>(*args)
 }
