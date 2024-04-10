@@ -1,6 +1,6 @@
 apiVersion: v2
-name: pagopa-afm-calculator
-description: Microservice that handles calculation for pagoPA Advanced Fees Management
+name: pagopa-payment-wallet-event-dispatcher-service
+description: Microservice that processes asynchronous workflows involving wallets inside the PagoPA platform.
 type: application
 version: 0.0.0
 appVersion: 0.0.0
