@@ -7,8 +7,10 @@ import it.pagopa.wallet.eventdispatcher.utils.Tracing
 import java.time.Instant
 import java.util.*
 import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 
+@Component
 class WalletUsageService(private val walletsApi: WalletsApi) {
 
     private val log = LoggerFactory.getLogger(WalletUsageService::class.java.name)
