@@ -54,6 +54,7 @@ dependencyManagement {
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("com.azure.spring:spring-cloud-azure-starter")
+  implementation("com.azure.spring:spring-cloud-azure-starter-data-cosmos")
   implementation("io.projectreactor:reactor-core")
 
   // spring integration
@@ -66,7 +67,7 @@ dependencies {
   implementation("com.azure:azure-core-serializer-json-jackson")
 
   implementation("org.springframework.boot:spring-boot-starter-actuator")
-  implementation("org.springframework.boot:spring-boot-starter-web-services")
+  implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.apache.httpcomponents:httpclient")
   implementation("com.google.code.findbugs:jsr305:${Deps.googleFindBugs}")
   implementation("org.projectlombok:lombok")
@@ -113,7 +114,12 @@ dependencyLocking { lockAllConfigurations() }
 sourceSets {
   main {
     java { srcDirs("${layout.buildDirectory.get().asFile.path}/generated/src/main/java") }
-    kotlin { srcDirs("src/main/kotlin", "${layout.buildDirectory.get().asFile.path}/generated/src/main/kotlin") }
+    kotlin {
+      srcDirs(
+        "src/main/kotlin",
+        "${layout.buildDirectory.get().asFile.path}/generated/src/main/kotlin"
+      )
+    }
     resources { srcDirs("src/resources") }
   }
 }
