@@ -9,7 +9,7 @@ import it.pagopa.wallet.eventdispatcher.configuration.SerializationConfiguration
 import it.pagopa.wallet.eventdispatcher.domain.WalletUpdateUsageError
 import it.pagopa.wallet.eventdispatcher.domain.WalletUsed
 import it.pagopa.wallet.eventdispatcher.service.WalletUsageService
-import java.time.Instant
+import java.time.OffsetDateTime
 import java.util.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -73,7 +73,7 @@ class WalletUsageQueueConsumerTest {
         val event =
             WalletUsed(
                 eventId = UUID.randomUUID().toString(),
-                creationDate = Instant.now(),
+                creationDate = OffsetDateTime.now(),
                 walletId = UUID.randomUUID().toString(),
                 clientId = clientId.name
             )
@@ -93,7 +93,7 @@ class WalletUsageQueueConsumerTest {
             .updateWalletUsage(
                 eq(event.walletId),
                 eq(ClientId.fromValue(event.clientId)),
-                eq(event.creationDate)
+                argThat { toInstant() == event.creationDate.toInstant() }
             )
     }
 
@@ -103,7 +103,7 @@ class WalletUsageQueueConsumerTest {
         val event =
             WalletUsed(
                 eventId = UUID.randomUUID().toString(),
-                creationDate = Instant.now(),
+                creationDate = OffsetDateTime.now(),
                 walletId = UUID.randomUUID().toString(),
                 clientId = clientId.name
             )
@@ -123,7 +123,7 @@ class WalletUsageQueueConsumerTest {
             .updateWalletUsage(
                 eq(event.walletId),
                 eq(ClientId.fromValue(event.clientId)),
-                eq(event.creationDate)
+                argThat { toInstant() == event.creationDate.toInstant() }
             )
     }
 
@@ -132,7 +132,7 @@ class WalletUsageQueueConsumerTest {
         val event =
             WalletUsed(
                 eventId = UUID.randomUUID().toString(),
-                creationDate = Instant.now(),
+                creationDate = OffsetDateTime.now(),
                 walletId = UUID.randomUUID().toString(),
                 clientId = "UNKNOWN_CLIENT"
             )

@@ -17,6 +17,7 @@ object Deps {
   val ecsLoggingVersion = "1.5.0"
   val googleFindBugs = "3.0.2"
   val mockitoKotlin = "4.0.0"
+  val openapiGenerator = "6.5.0"
 }
 
 plugins {
@@ -88,8 +89,8 @@ dependencies {
   implementation("co.elastic.logging:logback-ecs-encoder:${Deps.ecsLoggingVersion}")
 
   // openapi
-  implementation("org.openapitools:openapi-generator-gradle-plugin:6.5.0")
-  implementation("org.openapitools:jackson-databind-nullable:0.2.6")
+  implementation("org.openapitools:openapi-generator-gradle-plugin:${Deps.openapiGenerator}")
+  implementation("org.openapitools:jackson-databind-nullable")
   implementation("jakarta.xml.bind:jakarta.xml.bind-api")
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")

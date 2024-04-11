@@ -1,15 +1,15 @@
 package it.pagopa.wallet.eventdispatcher.domain
 
-import java.time.Instant
+import java.time.OffsetDateTime
 
 sealed interface WalletEvent {
     val eventId: String
-    val creationDate: Instant
+    val creationDate: OffsetDateTime
 }
 
 data class WalletUsed(
     override val eventId: String,
-    override val creationDate: Instant,
+    override val creationDate: OffsetDateTime,
     val walletId: String,
     val clientId: String
 ) : WalletEvent

@@ -4,7 +4,7 @@ import it.pagopa.generated.wallets.model.ClientId
 import it.pagopa.wallet.eventdispatcher.api.WalletsApi
 import it.pagopa.wallet.eventdispatcher.domain.WalletUpdateUsageError
 import it.pagopa.wallet.eventdispatcher.utils.Tracing
-import java.time.Instant
+import java.time.OffsetDateTime
 import java.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -15,7 +15,11 @@ class WalletUsageService(private val walletsApi: WalletsApi) {
 
     private val log = LoggerFactory.getLogger(WalletUsageService::class.java.name)
 
-    fun updateWalletUsage(walletId: String, clientId: ClientId, usedAt: Instant): Mono<Unit> {
+    fun updateWalletUsage(
+        walletId: String,
+        clientId: ClientId,
+        usedAt: OffsetDateTime
+    ): Mono<Unit> {
         log.info("Updating wallet usage walletId: [{}], client: [{}]", walletId, clientId)
         return walletsApi
             .updateWalletUsage(UUID.fromString(walletId), clientId, usedAt)

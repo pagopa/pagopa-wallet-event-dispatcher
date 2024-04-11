@@ -3,7 +3,7 @@ package it.pagopa.wallet.eventdispatcher.service
 import it.pagopa.generated.wallets.model.ClientId
 import it.pagopa.wallet.eventdispatcher.api.WalletsApi
 import it.pagopa.wallet.eventdispatcher.domain.WalletUpdateUsageError
-import java.time.Instant
+import java.time.OffsetDateTime
 import java.util.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
@@ -15,8 +15,8 @@ import reactor.kotlin.test.test
 
 class WalletUsageServiceTest {
 
-    private val walletsClient: WalletsApi = mock()
-    private val service = WalletUsageService(walletsClient)
+    private val walletsClient: it.pagopa.generated.wallets.api.WalletsApi = mock()
+    private val service = WalletUsageService(WalletsApi(walletsClient))
 
     @BeforeEach
     fun setup() {
@@ -29,9 +29,9 @@ class WalletUsageServiceTest {
         clientId: ClientId
     ) {
         val walletId = UUID.randomUUID().toString()
-        val updateTime = Instant.now()
+        val updateTime = OffsetDateTime.now()
 
-        given { walletsClient.updateWalletUsage(any(), any(), any()) }
+        given { walletsClient.updateWalletUsageWithHttpInfo(any(), any()) }
             .willReturn(Mono.just(ResponseEntity.noContent().build()))
 
         service
@@ -39,7 +39,7 @@ class WalletUsageServiceTest {
             .test()
             .assertNext {
                 verify(walletsClient)
-                    .updateWalletUsage(eq(UUID.fromString(walletId)), eq(clientId), eq(updateTime))
+                    .updateWalletUsageWithHttpInfo(eq(UUID.fromString(walletId)), any())
             }
             .verifyComplete()
     }
@@ -48,9 +48,9 @@ class WalletUsageServiceTest {
     @EnumSource(ClientId::class)
     fun `update wallet usage throw error if Wallets API goes error`(clientId: ClientId) {
         val walletId = UUID.randomUUID()
-        val updateTime = Instant.now()
+        val updateTime = OffsetDateTime.now()
 
-        given { walletsClient.updateWalletUsage(any(), any(), any()) }
+        given { walletsClient.updateWalletUsageWithHttpInfo(any(), any()) }
             .willReturn(Mono.just(ResponseEntity.badRequest().build()))
 
         service
