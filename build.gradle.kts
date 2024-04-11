@@ -52,7 +52,6 @@ dependencyManagement {
 
 dependencies {
   implementation("io.projectreactor:reactor-core")
-  implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
   implementation("com.azure.spring:spring-cloud-azure-starter")
   implementation("com.azure.spring:spring-cloud-azure-starter-data-cosmos")
 
