@@ -65,7 +65,7 @@ dependencies {
   implementation("com.azure:azure-core-serializer-json-jackson")
 
   implementation("org.springframework.boot:spring-boot-starter-actuator")
-  implementation("org.springframework.boot:spring-boot-starter-web-services")
+  implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.apache.httpcomponents:httpclient")
   implementation("com.google.code.findbugs:jsr305:${Deps.googleFindBugs}")
   implementation("org.projectlombok:lombok")
