@@ -92,6 +92,8 @@ dependencies {
   implementation("org.openapitools:jackson-databind-nullable:0.2.6")
   implementation("jakarta.xml.bind:jakarta.xml.bind-api")
 
+  annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
   runtimeOnly("org.springframework.boot:spring-boot-devtools")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("org.mockito:mockito-inline")
@@ -134,7 +136,10 @@ tasks.create("applySemanticVersionPlugin") {
   apply(plugin = "com.dipien.semantic-version")
 }
 
-tasks.withType<KotlinCompile> { kotlinOptions.jvmTarget = "17" }
+tasks.withType<KotlinCompile> {
+  dependsOn("walletsApi")
+  kotlinOptions.jvmTarget = "17"
+}
 
 tasks.withType(JavaCompile::class.java).configureEach { options.encoding = "UTF-8" }
 
@@ -194,10 +199,9 @@ tasks.register<GenerateTask>("walletsApi") {
   group = "openapi-generate"
 
   generatorName.set("java")
-  inputSpec.set("/Users/andrea.petreti/Development/pagopa-wallet-service/api-spec/wallet-api.yaml")
-  /*remoteInputSpec.set(
-    "https://raw.githubusercontent.com/pagopa/pagopa-infra/main/src/domains/ecommerce-app/api/ecommerce-payment-methods-service/v1/_openapi.json.tpl"
-  )*/
+  remoteInputSpec.set(
+    "https://raw.githubusercontent.com/pagopa/pagopa-wallet-service/a4a107de6208419c5a0b6b5a376a7fc84cbd3268/api-spec/wallet-api.yaml"
+  )
   outputDir.set(layout.buildDirectory.dir("generated").get().asFile.path)
   apiPackage.set("it.pagopa.generated.wallets.api")
   modelPackage.set("it.pagopa.generated.wallets.model")

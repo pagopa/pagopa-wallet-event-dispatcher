@@ -5,8 +5,11 @@ import com.azure.core.util.serializer.JsonSerializerProvider
 import com.azure.core.util.serializer.TypeReference
 import com.azure.spring.messaging.AzureHeaders
 import com.azure.spring.messaging.checkpoint.Checkpointer
+import it.pagopa.generated.wallets.model.ClientId
 import it.pagopa.wallet.eventdispatcher.common.queue.QueueEvent
 import it.pagopa.wallet.eventdispatcher.domain.WalletEvent
+import it.pagopa.wallet.eventdispatcher.domain.WalletUsed
+import it.pagopa.wallet.eventdispatcher.service.WalletUsageService
 import org.slf4j.LoggerFactory
 import org.springframework.integration.annotation.ServiceActivator
 import org.springframework.messaging.handler.annotation.Header
@@ -15,7 +18,10 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
 @Service("WalletUsageQueueConsumer")
-class WalletUsageQueueConsumer(azureJsonSerializer: JsonSerializerProvider) {
+class WalletUsageQueueConsumer(
+    private val walletUsageService: WalletUsageService,
+    azureJsonSerializer: JsonSerializerProvider
+) {
 
     private val azureSerializer = azureJsonSerializer.createInstance()
 
@@ -33,10 +39,19 @@ class WalletUsageQueueConsumer(azureJsonSerializer: JsonSerializerProvider) {
     ): Mono<Unit> {
         return BinaryData.fromBytes(payload)
             .toObjectAsync(EVENT_TYPE_REFERENCE, azureSerializer)
-            .doOnNext { logger.info("Received event {}", it) }
+            .flatMap { event ->
+                when (event.data) {
+                    is WalletUsed ->
+                        walletUsageService.updateWalletUsage(
+                            event.data.walletId,
+                            ClientId.fromValue(event.data.clientId),
+                            event.data.creationDate
+                        )
+                }
+            }
             .flatMap { checkPointer.successWithLog() }
             .onErrorResume { error ->
-                logger.error("Failed to consumer event", error)
+                logger.error("Unexpected failure during event processing", error)
                 checkPointer.successWithLog()
             }
     }
