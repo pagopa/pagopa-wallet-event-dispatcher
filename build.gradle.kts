@@ -6,6 +6,18 @@ version = "0.1.0"
 
 description = "pagopa-wallet-event-dispatcher-service"
 
+object Deps {
+  val kotlinBom = "1.7.22"
+  val kotlinCoroutinesBom = "1.6.4"
+  val springBootVersion = "3.0.5"
+  val springCloudAzureVersion = "5.10.0"
+  val vavrVersion = "0.10.4"
+  val nettyMacosResolver = "4.1.90.Final"
+  val ecsLoggingVersion = "1.5.0"
+  val googleFindBugs = "3.0.2"
+  val mockitoKotlin = "4.0.0"
+}
+
 plugins {
   id("java")
   id("org.springframework.boot") version "3.0.5"
@@ -26,30 +38,43 @@ tasks.withType<KotlinCompile> { kotlinOptions.jvmTarget = "17" }
 
 repositories { mavenCentral() }
 
-val ecsLoggingVersion = "1.5.0"
-
 dependencyManagement {
-  imports { mavenBom("org.springframework.boot:spring-boot-dependencies:3.0.5") }
-  imports { mavenBom("com.azure.spring:spring-cloud-azure-dependencies:4.0.0") }
+  imports {
+    mavenBom("org.springframework.boot:spring-boot-dependencies:${Deps.springBootVersion}")
+  }
+  imports {
+    mavenBom("com.azure.spring:spring-cloud-azure-dependencies:${Deps.springCloudAzureVersion}")
+  }
   // Kotlin BOM
-  imports { mavenBom("org.jetbrains.kotlin:kotlin-bom:1.7.22") }
-  imports { mavenBom("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.4") }
+  imports { mavenBom("org.jetbrains.kotlin:kotlin-bom:${Deps.kotlinBom}") }
+  imports { mavenBom("org.jetbrains.kotlinx:kotlinx-coroutines-bom:${Deps.kotlinCoroutinesBom}") }
 }
 
 dependencies {
   implementation("io.projectreactor:reactor-core")
-  implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
   implementation("com.azure.spring:spring-cloud-azure-starter")
   implementation("com.azure.spring:spring-cloud-azure-starter-data-cosmos")
+
+  // spring integration
+  implementation("org.springframework.boot:spring-boot-starter-integration")
+
+  // azure
+  implementation("com.azure.spring:spring-cloud-azure-starter-storage-queue")
+  implementation("com.azure.spring:spring-cloud-azure-starter-integration-storage-queue")
+  implementation("com.azure:azure-storage-queue")
+  implementation("com.azure:azure-core-serializer-json-jackson")
+
   implementation("org.springframework.boot:spring-boot-starter-actuator")
-  implementation("org.springframework.boot:spring-boot-starter-web-services")
+  implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.apache.httpcomponents:httpclient")
-  implementation("com.google.code.findbugs:jsr305:3.0.2")
+  implementation("com.google.code.findbugs:jsr305:${Deps.googleFindBugs}")
   implementation("org.projectlombok:lombok")
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
   implementation("org.springframework.boot:spring-boot-starter-aop")
-  implementation("io.netty:netty-resolver-dns-native-macos:4.1.90.Final")
-  implementation("io.vavr:vavr:0.10.4")
+  implementation("io.netty:netty-resolver-dns-native-macos:${Deps.nettyMacosResolver}")
+  implementation("io.vavr:vavr:${Deps.vavrVersion}")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+
   // Kotlin dependencies
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
   implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
@@ -58,7 +83,7 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
 
   // ECS logback encoder
-  implementation("co.elastic.logging:logback-ecs-encoder:$ecsLoggingVersion")
+  implementation("co.elastic.logging:logback-ecs-encoder:${Deps.ecsLoggingVersion}")
 
   runtimeOnly("org.springframework.boot:spring-boot-devtools")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -66,7 +91,7 @@ dependencies {
   testImplementation("io.projectreactor:reactor-test")
   // Kotlin dependencies
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
-  testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
+  testImplementation("org.mockito.kotlin:mockito-kotlin:${Deps.mockitoKotlin}")
 }
 
 configurations {
