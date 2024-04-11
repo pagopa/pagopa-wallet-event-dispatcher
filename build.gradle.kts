@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 group = "it.pagopa.wallet.eventdispatcher"
 
@@ -51,10 +52,9 @@ dependencyManagement {
 }
 
 dependencies {
-  implementation("io.projectreactor:reactor-core")
-  implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
+  implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("com.azure.spring:spring-cloud-azure-starter")
-  implementation("com.azure.spring:spring-cloud-azure-starter-data-cosmos")
+  implementation("io.projectreactor:reactor-core")
 
   // spring integration
   implementation("org.springframework.boot:spring-boot-starter-integration")
@@ -86,6 +86,11 @@ dependencies {
   // ECS logback encoder
   implementation("co.elastic.logging:logback-ecs-encoder:${Deps.ecsLoggingVersion}")
 
+  // openapi
+  implementation("org.openapitools:openapi-generator-gradle-plugin:6.5.0")
+  implementation("org.openapitools:jackson-databind-nullable:0.2.6")
+  implementation("jakarta.xml.bind:jakarta.xml.bind-api")
+
   runtimeOnly("org.springframework.boot:spring-boot-devtools")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("org.mockito:mockito-inline")
@@ -107,8 +112,8 @@ dependencyLocking { lockAllConfigurations() }
 
 sourceSets {
   main {
-    java { srcDirs("${layout.buildDirectory}/generated/src/main/java") }
-    kotlin { srcDirs("src/main/kotlin", "${layout.buildDirectory}/generated/src/main/kotlin") }
+    java { srcDirs("${layout.buildDirectory.get().asFile.path}/generated/src/main/java") }
+    kotlin { srcDirs("src/main/kotlin", "${layout.buildDirectory.get().asFile.path}/generated/src/main/kotlin") }
     resources { srcDirs("src/resources") }
   }
 }
@@ -177,3 +182,37 @@ tasks.jacocoTestReport {
  * and version
  */
 tasks.processResources { filesMatching("application.properties") { expand(project.properties) } }
+
+tasks.register<GenerateTask>("walletsApi") {
+  description = "Generate API client based on Wallet OpenAPI spec"
+  group = "openapi-generate"
+
+  generatorName.set("java")
+  inputSpec.set("/Users/andrea.petreti/Development/pagopa-wallet-service/api-spec/wallet-api.yaml")
+  /*remoteInputSpec.set(
+    "https://raw.githubusercontent.com/pagopa/pagopa-infra/main/src/domains/ecommerce-app/api/ecommerce-payment-methods-service/v1/_openapi.json.tpl"
+  )*/
+  outputDir.set(layout.buildDirectory.dir("generated").get().asFile.path)
+  apiPackage.set("it.pagopa.generated.wallets.api")
+  modelPackage.set("it.pagopa.generated.wallets.model")
+  generateApiTests.set(false)
+  generateApiDocumentation.set(false)
+  generateApiTests.set(false)
+  generateModelTests.set(false)
+  library.set("webclient")
+  configOptions.set(
+    mapOf(
+      "swaggerAnnotations" to "false",
+      "openApiNullable" to "true",
+      "interfaceOnly" to "true",
+      "hideGenerationTimestamp" to "true",
+      "skipDefaultInterface" to "true",
+      "useSwaggerUI" to "false",
+      "reactive" to "true",
+      "useSpringBoot3" to "true",
+      "oas3" to "true",
+      "generateSupportingFiles" to "false",
+      "useJakartaEe" to "true"
+    )
+  )
+}
