@@ -53,7 +53,6 @@ dependencyManagement {
 }
 
 dependencies {
-  implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("com.azure.spring:spring-cloud-azure-starter")
   implementation("com.azure.spring:spring-cloud-azure-starter-data-cosmos")
   implementation("io.projectreactor:reactor-core")
