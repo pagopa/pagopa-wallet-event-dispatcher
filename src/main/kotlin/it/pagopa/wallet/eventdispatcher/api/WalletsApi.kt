@@ -20,7 +20,6 @@ class WalletsApi(private val walletsApiClient: it.pagopa.generated.wallets.api.W
                 walletId,
                 UpdateWalletUsageRequest().clientId(clientId).usageTime(usedAt)
             )
-            .map {}
             .doOnError {
                 if (it is WebClientResponseException) {
                     logger.error(
@@ -31,5 +30,6 @@ class WalletsApi(private val walletsApiClient: it.pagopa.generated.wallets.api.W
                     logger.error("Error updating last usage data.", it)
                 }
             }
+            .map {}
     }
 }

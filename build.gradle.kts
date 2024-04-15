@@ -19,6 +19,7 @@ object Deps {
   const val mockitoKotlin = "4.0.0"
   const val openapiGenerator = "6.5.0"
   const val openapiDataBinding = "0.2.6"
+  const val mockWebServer = "4.12.0"
 }
 
 plugins {
@@ -102,6 +103,8 @@ dependencies {
   // Kotlin dependencies
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
   testImplementation("org.mockito.kotlin:mockito-kotlin:${Deps.mockitoKotlin}")
+
+  testImplementation("com.squareup.okhttp3:mockwebserver:${Deps.mockWebServer}")
 }
 
 configurations {
