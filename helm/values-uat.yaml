@@ -8,14 +8,14 @@ microservice-chart:
     httpGet:
       path: /actuator/health/liveness
       port: 8080
-    initialDelaySeconds: 90
+    initialDelaySeconds: 120
     failureThreshold: 6
     periodSeconds: 10
   readinessProbe:
     httpGet:
       path: /actuator/health/readiness
       port: 8080
-    initialDelaySeconds: 90
+    initialDelaySeconds: 120
     failureThreshold: 6
     periodSeconds: 10
   deployment:
@@ -43,10 +43,10 @@ microservice-chart:
   resources:
     requests:
       memory: "512Mi"
-      cpu: "200m"
+      cpu: "300m"
     limits:
       memory: "512Mi"
-      cpu: "200m"
+      cpu: "300m"
   autoscaling:
     enable: true
     minReplica: 1
@@ -74,6 +74,9 @@ microservice-chart:
     WALLET_STORAGE_QUEUE_ACCOUNT_NAME: pagopauweuwalletsa
     WALLET_STORAGE_QUEUE_ENDPOINT: https://pagopauweuwalletsa.queue.core.windows.net/pagopauweuwalletsa
     WALLET_USAGE_QUEUE_NAME: pagopa-u-weu-wallet-usage-update-queue
+    WALLET_SERVICE_URI: "http://pagopawalletservice-microservice-chart.wallet.svc:8080"
+    WALLET_SERVICE_READ_TIMEOUT: "10000"
+    WALLET_SERVICE_CONNECTION_TIMEOUT: "10000"
   envSecret:
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     WALLET_STORAGE_QUEUE_KEY: wallet-storage-account-key

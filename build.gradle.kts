@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 group = "it.pagopa.wallet.eventdispatcher"
 
@@ -7,15 +8,18 @@ version = "0.1.0"
 description = "pagopa-wallet-event-dispatcher-service"
 
 object Deps {
-  val kotlinBom = "1.7.22"
-  val kotlinCoroutinesBom = "1.6.4"
-  val springBootVersion = "3.0.5"
-  val springCloudAzureVersion = "5.10.0"
-  val vavrVersion = "0.10.4"
-  val nettyMacosResolver = "4.1.90.Final"
-  val ecsLoggingVersion = "1.5.0"
-  val googleFindBugs = "3.0.2"
-  val mockitoKotlin = "4.0.0"
+  const val kotlinBom = "1.7.22"
+  const val kotlinCoroutinesBom = "1.6.4"
+  const val springBootVersion = "3.0.5"
+  const val springCloudAzureVersion = "5.10.0"
+  const val vavrVersion = "0.10.4"
+  const val nettyMacosResolver = "4.1.90.Final"
+  const val ecsLoggingVersion = "1.5.0"
+  const val googleFindBugs = "3.0.2"
+  const val mockitoKotlin = "4.0.0"
+  const val openapiGenerator = "6.5.0"
+  const val openapiDataBinding = "0.2.6"
+  const val mockWebServer = "4.12.0"
 }
 
 plugins {
@@ -51,9 +55,9 @@ dependencyManagement {
 }
 
 dependencies {
-  implementation("io.projectreactor:reactor-core")
   implementation("com.azure.spring:spring-cloud-azure-starter")
   implementation("com.azure.spring:spring-cloud-azure-starter-data-cosmos")
+  implementation("io.projectreactor:reactor-core")
 
   // spring integration
   implementation("org.springframework.boot:spring-boot-starter-integration")
@@ -85,6 +89,13 @@ dependencies {
   // ECS logback encoder
   implementation("co.elastic.logging:logback-ecs-encoder:${Deps.ecsLoggingVersion}")
 
+  // openapi
+  implementation("org.openapitools:openapi-generator-gradle-plugin:${Deps.openapiGenerator}")
+  implementation("org.openapitools:jackson-databind-nullable:${Deps.openapiDataBinding}")
+  implementation("jakarta.xml.bind:jakarta.xml.bind-api")
+
+  annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
   runtimeOnly("org.springframework.boot:spring-boot-devtools")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("org.mockito:mockito-inline")
@@ -92,6 +103,8 @@ dependencies {
   // Kotlin dependencies
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
   testImplementation("org.mockito.kotlin:mockito-kotlin:${Deps.mockitoKotlin}")
+
+  testImplementation("com.squareup.okhttp3:mockwebserver:${Deps.mockWebServer}")
 }
 
 configurations {
@@ -106,8 +119,13 @@ dependencyLocking { lockAllConfigurations() }
 
 sourceSets {
   main {
-    java { srcDirs("${layout.buildDirectory}/generated/src/main/java") }
-    kotlin { srcDirs("src/main/kotlin", "${layout.buildDirectory}/generated/src/main/kotlin") }
+    java { srcDirs("${layout.buildDirectory.get().asFile.path}/generated/src/main/java") }
+    kotlin {
+      srcDirs(
+        "src/main/kotlin",
+        "${layout.buildDirectory.get().asFile.path}/generated/src/main/kotlin"
+      )
+    }
     resources { srcDirs("src/resources") }
   }
 }
@@ -122,7 +140,10 @@ tasks.create("applySemanticVersionPlugin") {
   apply(plugin = "com.dipien.semantic-version")
 }
 
-tasks.withType<KotlinCompile> { kotlinOptions.jvmTarget = "17" }
+tasks.withType<KotlinCompile> {
+  dependsOn("walletsApi")
+  kotlinOptions.jvmTarget = "17"
+}
 
 tasks.withType(JavaCompile::class.java).configureEach { options.encoding = "UTF-8" }
 
@@ -176,3 +197,36 @@ tasks.jacocoTestReport {
  * and version
  */
 tasks.processResources { filesMatching("application.properties") { expand(project.properties) } }
+
+tasks.register<GenerateTask>("walletsApi") {
+  description = "Generate API client based on Wallet OpenAPI spec"
+  group = "openapi-generate"
+
+  generatorName.set("java")
+  remoteInputSpec.set(
+    "https://raw.githubusercontent.com/pagopa/pagopa-wallet-service/main/api-spec/wallet-api.yaml"
+  )
+  outputDir.set(layout.buildDirectory.dir("generated").get().asFile.path)
+  apiPackage.set("it.pagopa.generated.wallets.api")
+  modelPackage.set("it.pagopa.generated.wallets.model")
+  generateApiTests.set(false)
+  generateApiDocumentation.set(false)
+  generateApiTests.set(false)
+  generateModelTests.set(false)
+  library.set("webclient")
+  configOptions.set(
+    mapOf(
+      "swaggerAnnotations" to "false",
+      "openApiNullable" to "true",
+      "interfaceOnly" to "true",
+      "hideGenerationTimestamp" to "true",
+      "skipDefaultInterface" to "true",
+      "useSwaggerUI" to "false",
+      "reactive" to "true",
+      "useSpringBoot3" to "true",
+      "oas3" to "true",
+      "generateSupportingFiles" to "false",
+      "useJakartaEe" to "true"
+    )
+  )
+}
