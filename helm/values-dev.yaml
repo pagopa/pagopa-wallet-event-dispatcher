@@ -2,7 +2,7 @@ microservice-chart:
   namespace: "wallet"
   image:
     repository: pagopadcommonacr.azurecr.io/pagopapaymentwalleteventdispatcherservice
-    tag: "0.1.1"
+    tag: "0.1.2"
     pullPolicy: Always
   livenessProbe:
     httpGet:
