@@ -8,16 +8,17 @@ version = "0.1.0"
 description = "pagopa-wallet-event-dispatcher-service"
 
 object Deps {
-  val kotlinBom = "1.7.22"
-  val kotlinCoroutinesBom = "1.6.4"
-  val springBootVersion = "3.0.5"
-  val springCloudAzureVersion = "5.10.0"
-  val vavrVersion = "0.10.4"
-  val nettyMacosResolver = "4.1.90.Final"
-  val ecsLoggingVersion = "1.5.0"
-  val googleFindBugs = "3.0.2"
-  val mockitoKotlin = "4.0.0"
-  val openapiGenerator = "6.5.0"
+  const val kotlinBom = "1.7.22"
+  const val kotlinCoroutinesBom = "1.6.4"
+  const val springBootVersion = "3.0.5"
+  const val springCloudAzureVersion = "5.10.0"
+  const val vavrVersion = "0.10.4"
+  const val nettyMacosResolver = "4.1.90.Final"
+  const val ecsLoggingVersion = "1.5.0"
+  const val googleFindBugs = "3.0.2"
+  const val mockitoKotlin = "4.0.0"
+  const val openapiGenerator = "6.5.0"
+  const val openapiDataBinding = "0.2.6"
 }
 
 plugins {
@@ -89,7 +90,7 @@ dependencies {
 
   // openapi
   implementation("org.openapitools:openapi-generator-gradle-plugin:${Deps.openapiGenerator}")
-  implementation("org.openapitools:jackson-databind-nullable")
+  implementation("org.openapitools:jackson-databind-nullable:${Deps.openapiDataBinding}")
   implementation("jakarta.xml.bind:jakarta.xml.bind-api")
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")

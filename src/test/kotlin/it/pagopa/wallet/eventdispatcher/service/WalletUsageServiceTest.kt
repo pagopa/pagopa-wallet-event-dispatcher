@@ -10,6 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.mockito.kotlin.*
 import org.springframework.http.ResponseEntity
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
 import reactor.kotlin.test.test
 
@@ -51,7 +52,7 @@ class WalletUsageServiceTest {
         val updateTime = OffsetDateTime.now()
 
         given { walletsClient.updateWalletUsageWithHttpInfo(any(), any()) }
-            .willReturn(Mono.just(ResponseEntity.badRequest().build()))
+            .willReturn(Mono.error(mock<WebClientResponseException.BadRequest>()))
 
         service
             .updateWalletUsage(walletId.toString(), clientId, updateTime)

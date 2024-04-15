@@ -23,8 +23,7 @@ class WalletUsageService(private val walletsApi: WalletsApi) {
         log.info("Updating wallet usage walletId: [{}], client: [{}]", walletId, clientId)
         return walletsApi
             .updateWalletUsage(UUID.fromString(walletId), clientId, usedAt)
-            .filter { it.statusCode.is2xxSuccessful }
-            .switchIfEmpty(Mono.error(WalletUpdateUsageError(UUID.fromString(walletId))))
+            .onErrorMap { WalletUpdateUsageError(UUID.fromString(walletId)) }
             .doOnNext {
                 log.info(
                     "Wallet last usage updated, walletId: [{}], client: [{}]",
