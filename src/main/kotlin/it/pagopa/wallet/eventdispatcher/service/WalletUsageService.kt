@@ -33,9 +33,7 @@ class WalletUsageService(private val walletsApi: WalletsApi) {
             }
             .doOnError {
                 log.error(
-                    "Failed last usage update, walletId: [{}], client: [{}]",
-                    walletId,
-                    clientId,
+                    "Failed last usage update, walletId: [$walletId], client: [$clientId]",
                     it
                 )
             }
