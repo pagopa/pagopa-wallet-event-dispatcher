@@ -30,6 +30,6 @@ class WalletsApi(private val walletsApiClient: it.pagopa.generated.wallets.api.W
                     logger.error("Error updating last usage data.", it)
                 }
             }
-            .then()
+            .thenReturn(Unit)
     }
 }
