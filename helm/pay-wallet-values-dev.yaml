@@ -75,7 +75,7 @@ microservice-chart:
     OTEL_TRACES_SAMPLER: "always_on"
     WALLET_STORAGE_QUEUE_ACCOUNT_NAME: pagopaditnpaywalletsa
     WALLET_STORAGE_QUEUE_ENDPOINT: https://pagopaditnpaywalletsa.queue.core.windows.net/pagopaditnpaywalletsa
-    WALLET_USAGE_QUEUE_NAME: pagopa-d-itn-wallet-usage-update-queue
+    WALLET_USAGE_QUEUE_NAME: pagopa-d-itn-pay-wallet-usage-update-queue
     WALLET_SERVICE_URI: "http://pagopawalletservice-microservice-chart.wallet.svc:8080"
     WALLET_SERVICE_READ_TIMEOUT: "10000"
     WALLET_SERVICE_CONNECTION_TIMEOUT: "10000"
