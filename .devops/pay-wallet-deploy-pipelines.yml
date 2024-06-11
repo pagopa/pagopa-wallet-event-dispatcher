@@ -142,7 +142,7 @@ stages:
   - stage: "Build_release_candidate"
     displayName: 'Build release candidate'
     dependsOn: [ ]
-      condition:
+    condition:
       and(
         succeeded(),
         eq(${{parameters.UAT_PROD_DEPLOY}}, true),
