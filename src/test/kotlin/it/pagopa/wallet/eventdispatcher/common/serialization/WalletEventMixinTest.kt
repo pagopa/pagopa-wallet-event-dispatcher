@@ -9,23 +9,20 @@ import it.pagopa.wallet.eventdispatcher.configuration.SerializationConfiguration
 import it.pagopa.wallet.eventdispatcher.domain.WalletCreatedEvent
 import it.pagopa.wallet.eventdispatcher.domain.WalletEvent
 import it.pagopa.wallet.eventdispatcher.domain.WalletUsedEvent
+import java.nio.charset.StandardCharsets
+import java.time.OffsetDateTime
+import java.util.stream.Stream
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import reactor.kotlin.test.test
-import java.nio.charset.StandardCharsets
-import java.time.OffsetDateTime
-import java.util.stream.Stream
 
 class WalletEventMixinTest {
 
     companion object {
-        private val mockedTracingInfo = TracingInfo(
-            baggage = "baggage",
-            tracestate = "tracestate",
-            traceparent = "traceparent"
-        )
+        private val mockedTracingInfo =
+            TracingInfo(baggage = "baggage", tracestate = "tracestate", traceparent = "traceparent")
 
         @JvmStatic
         fun roundTripEventMethodSource(): Stream<Arguments> =
@@ -45,13 +42,15 @@ class WalletEventMixinTest {
                             "baggage": "baggage"
                         }
                     }
-                """, QueueEvent(
+                """,
+                    QueueEvent(
                         tracingInfo = mockedTracingInfo,
-                        data = WalletCreatedEvent(
-                            walletId = "a21e0037-251d-413b-b121-8899e368df7e",
-                            eventId = "bcfb7296-c53f-4840-9977-84a597fca1a0",
-                            creationDate = OffsetDateTime.parse("2024-06-12T15:50:47.231210Z")
-                        )
+                        data =
+                            WalletCreatedEvent(
+                                walletId = "a21e0037-251d-413b-b121-8899e368df7e",
+                                eventId = "bcfb7296-c53f-4840-9977-84a597fca1a0",
+                                creationDate = OffsetDateTime.parse("2024-06-12T15:50:47.231210Z")
+                            )
                     )
                 ),
                 Arguments.of(
@@ -70,14 +69,16 @@ class WalletEventMixinTest {
                             "baggage": "baggage"
                         }
                     }
-                """, QueueEvent(
+                """,
+                    QueueEvent(
                         tracingInfo = mockedTracingInfo,
-                        data = WalletUsedEvent(
-                            walletId = "a21e0037-251d-413b-b121-8899e368df7e",
-                            eventId = "bcfb7296-c53f-4840-9977-84a597fca1a0",
-                            creationDate = OffsetDateTime.parse("2024-06-12T15:50:47.231210Z"),
-                            clientId = "IO"
-                        )
+                        data =
+                            WalletUsedEvent(
+                                walletId = "a21e0037-251d-413b-b121-8899e368df7e",
+                                eventId = "bcfb7296-c53f-4840-9977-84a597fca1a0",
+                                creationDate = OffsetDateTime.parse("2024-06-12T15:50:47.231210Z"),
+                                clientId = "IO"
+                            )
                     )
                 )
             )
@@ -86,7 +87,8 @@ class WalletEventMixinTest {
     private val serializationConfiguration = SerializationConfiguration()
     private val objectMapper: ObjectMapper =
         serializationConfiguration.objectMapperBuilder().build()
-    private val azureJsonSerializer = serializationConfiguration.azureJsonSerializer(objectMapper).createInstance()
+    private val azureJsonSerializer =
+        serializationConfiguration.azureJsonSerializer(objectMapper).createInstance()
 
     @ParameterizedTest
     @MethodSource("roundTripEventMethodSource")
@@ -95,7 +97,10 @@ class WalletEventMixinTest {
         expectedDeserializedEvent: QueueEvent<WalletEvent>
     ) {
         BinaryData.fromBytes(serializedEvent.toByteArray(StandardCharsets.UTF_8))
-            .toObjectAsync(object : TypeReference<QueueEvent<WalletEvent>>() {}, azureJsonSerializer)
+            .toObjectAsync(
+                object : TypeReference<QueueEvent<WalletEvent>>() {},
+                azureJsonSerializer
+            )
             .test()
             .consumeNextWith { assertEquals(expectedDeserializedEvent, it) }
             .verifyComplete()

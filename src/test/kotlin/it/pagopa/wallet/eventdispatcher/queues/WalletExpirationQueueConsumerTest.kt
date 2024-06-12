@@ -3,6 +3,7 @@ package it.pagopa.wallet.eventdispatcher.queues
 import com.azure.spring.messaging.checkpoint.Checkpointer
 import com.fasterxml.jackson.databind.ObjectMapper
 import it.pagopa.wallet.eventdispatcher.configuration.SerializationConfiguration
+import java.nio.charset.StandardCharsets
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
@@ -12,7 +13,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
-import java.nio.charset.StandardCharsets
 
 class WalletExpirationQueueConsumerTest {
 
@@ -22,13 +22,13 @@ class WalletExpirationQueueConsumerTest {
         serializationConfiguration.objectMapperBuilder().build()
     private val azureJsonSerializer = serializationConfiguration.azureJsonSerializer(objectMapper)
 
-    private val walletExpirationQueueConsumer = WalletExpirationQueueConsumer(
-        azureJsonSerializer = azureJsonSerializer
-    )
+    private val walletExpirationQueueConsumer =
+        WalletExpirationQueueConsumer(azureJsonSerializer = azureJsonSerializer)
 
     @Test
     fun `Should parse wallet created event successfully`() {
-        val queueEvent = """
+        val queueEvent =
+            """
             {
                 "data": {
                     "type": "WalletExpired",
@@ -42,24 +42,27 @@ class WalletExpirationQueueConsumerTest {
                     "baggage": "baggage"
                 }
             }
-        """.trimIndent()
+        """
+                .trimIndent()
         val payload = queueEvent.toByteArray(StandardCharsets.UTF_8)
         given(checkPointer.success()).willReturn(Mono.empty())
         StepVerifier.create(
-            walletExpirationQueueConsumer.messageReceiver(
-                payload = payload,
-                checkPointer = checkPointer
+                walletExpirationQueueConsumer.messageReceiver(
+                    payload = payload,
+                    checkPointer = checkPointer
+                )
             )
-        )
             .expectNext(Unit)
             .verifyComplete()
         verify(checkPointer, times(1)).success()
-
     }
 
     @ParameterizedTest
     @ValueSource(
-        strings = ["{}", """
+        strings =
+            [
+                "{}",
+                """
          {
                 "data": {
                     "type": "WalletExpired",
@@ -72,20 +75,20 @@ class WalletExpirationQueueConsumerTest {
                     "baggage": "baggage"
                 }
             }
-    """]
+    """
+            ]
     )
     fun `Should perform success checkpoint for invalid event`(queueEvent: String) {
         val payload = queueEvent.toByteArray(StandardCharsets.UTF_8)
         given(checkPointer.success()).willReturn(Mono.empty())
         StepVerifier.create(
-            walletExpirationQueueConsumer.messageReceiver(
-                payload = payload,
-                checkPointer = checkPointer
+                walletExpirationQueueConsumer.messageReceiver(
+                    payload = payload,
+                    checkPointer = checkPointer
+                )
             )
-        )
             .expectError()
             .verify()
         verify(checkPointer, times(1)).success()
     }
 }
-
