@@ -10,7 +10,6 @@ class WalletExpirationQueueConsumerTest {
     private val checkpointer: Checkpointer = mock()
     private val serializationConfiguration = SerializationConfiguration()
     private val objectMapper: ObjectMapper =
-        serializationConfiguration
-            .objectMapperBuilder().build()
+        serializationConfiguration.objectMapperBuilder().build()
     private val azureJsonSerializer = serializationConfiguration.azureJsonSerializer(objectMapper)
 }

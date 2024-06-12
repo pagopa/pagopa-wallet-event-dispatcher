@@ -17,9 +17,7 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
 @Service
-class WalletExpirationQueueConsumer(
-    azureJsonSerializer: JsonSerializerProvider
-) {
+class WalletExpirationQueueConsumer(azureJsonSerializer: JsonSerializerProvider) {
 
     private val azureSerializer = azureJsonSerializer.createInstance()
 
