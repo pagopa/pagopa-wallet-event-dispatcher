@@ -2,7 +2,6 @@ package it.pagopa.wallet.eventdispatcher.configuration
 
 import com.azure.core.serializer.json.jackson.JacksonJsonSerializerBuilder
 import com.azure.core.util.serializer.JsonSerializerProvider
-import com.azure.spring.messaging.storage.queue.implementation.support.converter.StorageQueueMessageConverter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
@@ -27,9 +26,4 @@ class SerializationConfiguration {
         JsonSerializerProvider {
             JacksonJsonSerializerBuilder().serializer(objectMapper).build()
         }
-
-    @Bean
-    fun storageQueueMessageConverter(objectMapper: ObjectMapper): StorageQueueMessageConverter {
-        return StorageQueueMessageConverter(objectMapper)
-    }
 }

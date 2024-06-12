@@ -5,12 +5,10 @@ import com.azure.core.util.serializer.JsonSerializerProvider
 import com.azure.core.util.serializer.TypeReference
 import com.azure.spring.messaging.AzureHeaders
 import com.azure.spring.messaging.checkpoint.Checkpointer
-import it.pagopa.generated.wallets.model.ClientId
 import it.pagopa.wallet.eventdispatcher.common.queue.QueueEvent
 import it.pagopa.wallet.eventdispatcher.configuration.QueueConsumerConfiguration
+import it.pagopa.wallet.eventdispatcher.domain.WalletCreatedEvent
 import it.pagopa.wallet.eventdispatcher.domain.WalletEvent
-import it.pagopa.wallet.eventdispatcher.domain.WalletUsedEvent
-import it.pagopa.wallet.eventdispatcher.service.WalletUsageService
 import org.slf4j.LoggerFactory
 import org.springframework.integration.annotation.ServiceActivator
 import org.springframework.messaging.handler.annotation.Header
@@ -19,19 +17,18 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 
 @Service
-class WalletUsageQueueConsumer(
-    private val walletUsageService: WalletUsageService,
+class WalletExpirationQueueConsumer(
     azureJsonSerializer: JsonSerializerProvider
 ) {
 
     private val azureSerializer = azureJsonSerializer.createInstance()
 
     companion object {
-        const val INPUT_CHANNEL = QueueConsumerConfiguration.WALLET_USAGE_CHANNEL
+        const val INPUT_CHANNEL = QueueConsumerConfiguration.WALLET_EXPIRATION_CHANNEL
         private val EVENT_TYPE_REFERENCE = object : TypeReference<QueueEvent<WalletEvent>>() {}
     }
 
-    private val logger = LoggerFactory.getLogger(WalletUsageQueueConsumer::class.java)
+    private val logger = LoggerFactory.getLogger(WalletExpirationQueueConsumer::class.java)
 
     @ServiceActivator(inputChannel = INPUT_CHANNEL, outputChannel = "nullChannel")
     fun messageReceiver(
@@ -43,17 +40,17 @@ class WalletUsageQueueConsumer(
             .then(
                 BinaryData.fromBytes(payload).toObjectAsync(EVENT_TYPE_REFERENCE, azureSerializer)
             )
-            .map { it.data }
-            .cast(WalletUsedEvent::class.java)
-            .flatMap { event ->
-                walletUsageService.updateWalletUsage(
-                    event.walletId,
-                    ClientId.fromValue(event.clientId),
-                    event.creationDate
+            .map { it.tracingInfo to it.data as WalletCreatedEvent }
+            .doOnNext { (tracingInfo, walletCreatedEvent) ->
+                logger.info(
+                    "Parsed wallet expiration event from queue: [{}] with tracing info: [{}]",
+                    walletCreatedEvent,
+                    tracingInfo
                 )
             }
             .doOnError { error ->
-                logger.error("Unexpected failure during event processing", error)
+                logger.error("Exception processing wallet expiration event", error)
             }
+            .thenReturn(Unit)
     }
 }

@@ -7,7 +7,7 @@ import it.pagopa.generated.wallets.model.ClientId
 import it.pagopa.wallet.eventdispatcher.common.queue.QueueEvent
 import it.pagopa.wallet.eventdispatcher.configuration.SerializationConfiguration
 import it.pagopa.wallet.eventdispatcher.domain.WalletUpdateUsageError
-import it.pagopa.wallet.eventdispatcher.domain.WalletUsed
+import it.pagopa.wallet.eventdispatcher.domain.WalletUsedEvent
 import it.pagopa.wallet.eventdispatcher.service.WalletUsageService
 import java.time.OffsetDateTime
 import java.util.*
@@ -49,8 +49,8 @@ class WalletUsageQueueConsumerTest {
         consumer
             .messageReceiver(BinaryData.fromString(event).toBytes(), checkPointer)
             .test()
-            .expectComplete()
-            .verify()
+            .expectNext(Unit)
+            .verifyComplete()
 
         verify(checkPointer, times(1)).success()
     }
@@ -61,7 +61,7 @@ class WalletUsageQueueConsumerTest {
         consumer
             .messageReceiver(BinaryData.fromString(event).toBytes(), checkPointer)
             .test()
-            .expectComplete()
+            .expectError()
             .verify()
 
         verify(checkPointer, times(1)).success()
@@ -71,7 +71,7 @@ class WalletUsageQueueConsumerTest {
     @EnumSource(ClientId::class)
     fun `should update wallet usage when receive wallet used event`(clientId: ClientId) {
         val event =
-            WalletUsed(
+            WalletUsedEvent(
                 eventId = UUID.randomUUID().toString(),
                 creationDate = OffsetDateTime.now(),
                 walletId = UUID.randomUUID().toString(),
@@ -85,8 +85,8 @@ class WalletUsageQueueConsumerTest {
                 checkPointer
             )
             .test()
-            .expectComplete()
-            .verify()
+            .expectNext(Unit)
+            .verifyComplete()
 
         verify(checkPointer, times(1)).success()
         verify(walletUsageService, times(1))
@@ -101,7 +101,7 @@ class WalletUsageQueueConsumerTest {
     @EnumSource(ClientId::class)
     fun `should checkpoint event wallet usage update fails`(clientId: ClientId) {
         val event =
-            WalletUsed(
+            WalletUsedEvent(
                 eventId = UUID.randomUUID().toString(),
                 creationDate = OffsetDateTime.now(),
                 walletId = UUID.randomUUID().toString(),
@@ -115,7 +115,7 @@ class WalletUsageQueueConsumerTest {
                 checkPointer
             )
             .test()
-            .expectComplete()
+            .expectError()
             .verify()
 
         verify(checkPointer, times(1)).success()
@@ -130,7 +130,7 @@ class WalletUsageQueueConsumerTest {
     @Test
     fun `should fail, but checkpoint event when clientId is not recognized`() {
         val event =
-            WalletUsed(
+            WalletUsedEvent(
                 eventId = UUID.randomUUID().toString(),
                 creationDate = OffsetDateTime.now(),
                 walletId = UUID.randomUUID().toString(),
@@ -144,7 +144,7 @@ class WalletUsageQueueConsumerTest {
                 checkPointer
             )
             .test()
-            .expectComplete()
+            .expectError()
             .verify()
 
         verify(checkPointer, times(1)).success()
