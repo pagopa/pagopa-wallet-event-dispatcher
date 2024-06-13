@@ -7,9 +7,16 @@ sealed interface WalletEvent {
     val creationDate: OffsetDateTime
 }
 
-data class WalletUsed(
+data class WalletUsedEvent(
     override val eventId: String,
     override val creationDate: OffsetDateTime,
     val walletId: String,
     val clientId: String
+) : WalletEvent
+
+/** Wallet created event. */
+data class WalletCreatedEvent(
+    override val eventId: String,
+    override val creationDate: OffsetDateTime,
+    val walletId: String
 ) : WalletEvent
