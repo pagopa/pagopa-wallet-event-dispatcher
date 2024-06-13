@@ -15,6 +15,6 @@ import it.pagopa.wallet.eventdispatcher.domain.WalletUsedEvent
 class WalletEventMixin {
     companion object {
         const val WALLET_USED_TYPE = "WalletUsed"
-        const val WALLET_EXPIRED_TYPE = "WalletExpired"
+        const val WALLET_EXPIRED_TYPE = "WalletCreated"
     }
 }

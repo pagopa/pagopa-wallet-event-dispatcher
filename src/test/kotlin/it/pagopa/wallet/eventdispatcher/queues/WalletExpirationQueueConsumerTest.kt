@@ -31,7 +31,7 @@ class WalletExpirationQueueConsumerTest {
             """
             {
                 "data": {
-                    "type": "WalletExpired",
+                    "type": "WalletCreated",
                     "eventId": "bcfb7296-c53f-4840-9977-84a597fca1a0",
                     "creationDate": 1718206463.077352000,
                     "walletId": "a21e0037-251d-413b-b121-8899e368df7e"
