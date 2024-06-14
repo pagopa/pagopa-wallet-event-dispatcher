@@ -61,7 +61,8 @@ class WalletExpirationQueueConsumer(
                         WalletStatusErrorPatchRequest()
                             .status(WalletStatus.ERROR.toString())
                             .details(
-                                WalletStatusErrorPatchRequestDetails().reason("Wallet expired.")
+                                WalletStatusErrorPatchRequestDetails()
+                                    .reason("Wallet expired. Creation date: $walletCreationDate")
                             )
                 )
             }

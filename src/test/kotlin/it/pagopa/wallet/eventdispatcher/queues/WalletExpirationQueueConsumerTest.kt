@@ -39,7 +39,8 @@ class WalletExpirationQueueConsumerTest {
     @Test
     fun `Should process wallet create event successfully`() {
         val walletId = UUID.randomUUID()
-        val walletCreationDate = OffsetDateTime.now()
+        val creationDate = "2024-06-14T15:04:56.908428Z"
+        val walletCreationDate = OffsetDateTime.parse(creationDate)
         val walletCreatedEvent =
             QueueEvent(
                 WalletCreatedEvent(
@@ -56,7 +57,10 @@ class WalletExpirationQueueConsumerTest {
         val expectedPatchRequest =
             WalletStatusErrorPatchRequest()
                 .status("ERROR")
-                .details(WalletStatusErrorPatchRequestDetails().reason("Wallet expired."))
+                .details(
+                    WalletStatusErrorPatchRequestDetails()
+                        .reason("Wallet expired. Creation date: $creationDate")
+                )
         StepVerifier.create(
                 walletExpirationQueueConsumer.messageReceiver(
                     payload = payload,
@@ -76,7 +80,8 @@ class WalletExpirationQueueConsumerTest {
     @Test
     fun `Should propagate error patching wallet status to ERROT`() {
         val walletId = UUID.randomUUID()
-        val walletCreationDate = OffsetDateTime.now()
+        val creationDate = "2024-06-14T15:04:56.908428Z"
+        val walletCreationDate = OffsetDateTime.parse(creationDate)
         val walletCreatedEvent =
             QueueEvent(
                 WalletCreatedEvent(
@@ -94,7 +99,10 @@ class WalletExpirationQueueConsumerTest {
         val expectedPatchRequest =
             WalletStatusErrorPatchRequest()
                 .status("ERROR")
-                .details(WalletStatusErrorPatchRequestDetails().reason("Wallet expired."))
+                .details(
+                    WalletStatusErrorPatchRequestDetails()
+                        .reason("Wallet expired. Creation date: $creationDate")
+                )
         StepVerifier.create(
                 walletExpirationQueueConsumer.messageReceiver(
                     payload = payload,
