@@ -1,8 +1,10 @@
 microservice-chart:
-  namespace: "wallet"
+  namespace: "pay-wallet"
+  nameOverride: ""
+  fullnameOverride: "pagopa-pay-wallet-event-dispatcher-microservice"
   image:
-    repository: pagopaucommonacr.azurecr.io/pagopapaymentwalleteventdispatcherservice
-    tag: "0.2.4"
+    repository: pagopapitncoreacr.azurecr.io/pagopapaymentwalleteventdispatcherservice
+    tag: "0.1.2"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -27,14 +29,14 @@ microservice-chart:
       - 8080
   ingress:
     create: true
-    host: "weuuat.wallet.internal.dev.platform.pagopa.it"
+    host: "itnprod.wallet.internal.prod.platform.pagopa.it"
     path: /pagopa-wallet-event-dispatcher-service/(.*)
     servicePort: 8080
   serviceAccount:
     create: false
-    annotations: {}
+    annotations: { }
     name: ""
-  podAnnotations: {}
+  podAnnotations: { }
   podSecurityContext:
     seccompProfile:
       type: RuntimeDefault
@@ -63,38 +65,28 @@ microservice-chart:
     ENV: 'uat'
     APP_LOGGING_LEVEL: 'DEBUG'
     DEFAULT_LOGGING_LEVEL: 'INFO'
-    OTEL_SERVICE_NAME: "pagopa-wallet-event-dispatcher-service"
+    OTEL_SERVICE_NAME: "pagopa-payment-wallet-event-dispatcher-service"
     OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=uat"
-    OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.elastic-system.svc:4317"
-    OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+    OTEL_EXPORTER_OTLP_ENDPOINT: "https://weuprod.kibana.internal.prod.platform.pagopa.it/apm"
+    OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
     OTEL_TRACES_EXPORTER: otlp
     OTEL_METRICS_EXPORTER: otlp
-    OTEL_LOGS_EXPORTER: none
+    OTEL_LOGS_EXPORTER: otlp
     OTEL_TRACES_SAMPLER: "always_on"
-    WALLET_STORAGE_QUEUE_ACCOUNT_NAME: pagopauweuwalletsa
-    WALLET_STORAGE_QUEUE_ENDPOINT: https://pagopauweuwalletsa.queue.core.windows.net/pagopauweuwalletsa
-    WALLET_USAGE_QUEUE_NAME: pagopa-u-weu-wallet-usage-update-queue
-    WALLET_SERVICE_URI: "http://pagopawalletservice-microservice-chart.wallet.svc:8080"
+    WALLET_STORAGE_QUEUE_ACCOUNT_NAME: pagopapitnpaywalletsa
+    WALLET_STORAGE_QUEUE_ENDPOINT: https://pagopapitnpaywalletsa.queue.core.windows.net/pagopapitnpaywalletsa
+    WALLET_USAGE_QUEUE_NAME: pagopa-p-itn-pay-wallet-usage-update-queue
+    WALLET_SERVICE_URI: "http://pagopawalletservice-microservice-chart.pay-wallet.svc:8080"
     WALLET_SERVICE_READ_TIMEOUT: "10000"
     WALLET_SERVICE_CONNECTION_TIMEOUT: "10000"
-    WALLET_EXPIRATION_QUEUE_NAME: "pagopa-u-weu-wallet-expiration-queue"
+    WALLET_EXPIRATION_QUEUE_NAME: " pagopa-p-itn-pay-wallet-expiration-queue"
   envSecret:
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     WALLET_STORAGE_QUEUE_KEY: wallet-storage-account-key
   keyvault:
-    name: "pagopa-u-wallet-kv"
+    name: "pagopa-p-pay-wallet-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-  nodeSelector: {}
-  tolerations: []
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-          - matchExpressions:
-              - key: node_type
-                operator: In
-                values:
-                  - user
+  nodeSelector: { }
   canaryDelivery:
     create: false
     ingress:
@@ -106,8 +98,31 @@ microservice-chart:
     deployment:
       create: true
       image:
-        repository: pagopadcommonacr.azurecr.io/pagopawalleteventdispatcher
+        repository: pagopapitncoreacr.azurecr.io/pagopawalleteventdispatcher
         tag: "latest"
         pullPolicy: Always
-      envConfig: {}
-      envSecret: {}
+      envConfig: { }
+      envSecret: { }
+  tolerations:
+    - effect: "NoSchedule"
+      key: "paymentWalletOnly"
+      operator: "Equal"
+      value: "true"
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: domain
+                operator: In
+                values:
+                  - paywallet
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                aadpodidbinding: pay-wallet-pod-identity
+            namespaces: ["pay-wallet"]
+            topologyKey: topology.kubernetes.io/zone
