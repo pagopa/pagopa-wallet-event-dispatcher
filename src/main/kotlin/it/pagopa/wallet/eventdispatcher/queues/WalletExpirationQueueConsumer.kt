@@ -6,8 +6,8 @@ import com.azure.core.util.serializer.TypeReference
 import com.azure.spring.messaging.AzureHeaders
 import com.azure.spring.messaging.checkpoint.Checkpointer
 import it.pagopa.generated.wallets.model.WalletStatus
+import it.pagopa.generated.wallets.model.WalletStatusErrorPatchRequest
 import it.pagopa.generated.wallets.model.WalletStatusErrorPatchRequestDetails
-import it.pagopa.generated.wallets.model.WalletStatusPatchRequest
 import it.pagopa.wallet.eventdispatcher.api.WalletsApi
 import it.pagopa.wallet.eventdispatcher.common.queue.QueueEvent
 import it.pagopa.wallet.eventdispatcher.configuration.QueueConsumerConfiguration
@@ -58,7 +58,7 @@ class WalletExpirationQueueConsumer(
                 walletsApi.updateWalletStatus(
                     walletId = UUID.fromString(walletId),
                     walletStatusPatchRequest =
-                        WalletStatusPatchRequest()
+                        WalletStatusErrorPatchRequest()
                             .status(WalletStatus.ERROR.toString())
                             .details(
                                 WalletStatusErrorPatchRequestDetails().reason("Wallet expired.")

@@ -1,7 +1,7 @@
 package it.pagopa.wallet.eventdispatcher.api
 
 import it.pagopa.generated.wallets.model.ClientId
-import it.pagopa.generated.wallets.model.WalletStatusPatchRequest
+import it.pagopa.generated.wallets.model.WalletStatusErrorPatchRequest
 import it.pagopa.wallet.eventdispatcher.configuration.WebClientConfiguration
 import it.pagopa.wallet.eventdispatcher.configuration.properties.WalletsApiConfiguration
 import it.pagopa.wallet.eventdispatcher.exceptions.WalletPatchStatusError
@@ -93,7 +93,7 @@ class WalletsApiTest {
         walletsApi
             .updateWalletStatus(
                 walletId = walletId,
-                walletStatusPatchRequest = WalletStatusPatchRequest().status("ERROR")
+                walletStatusPatchRequest = WalletStatusErrorPatchRequest().status("ERROR")
             )
             .test()
             .expectNext(Unit)
@@ -109,7 +109,8 @@ class WalletsApiTest {
         walletsApi
             .updateWalletStatus(
                 walletId = walletId,
-                walletStatusPatchRequest = WalletStatusPatchRequest().status(walletUpdateStatus)
+                walletStatusPatchRequest =
+                    WalletStatusErrorPatchRequest().status(walletUpdateStatus)
             )
             .test()
             .expectErrorMatches {
@@ -135,7 +136,8 @@ class WalletsApiTest {
         walletsApi
             .updateWalletStatus(
                 walletId = walletId,
-                walletStatusPatchRequest = WalletStatusPatchRequest().status(walletUpdateStatus)
+                walletStatusPatchRequest =
+                    WalletStatusErrorPatchRequest().status(walletUpdateStatus)
             )
             .test()
             .expectErrorMatches {

@@ -2,8 +2,8 @@ package it.pagopa.wallet.eventdispatcher.queues
 
 import com.azure.spring.messaging.checkpoint.Checkpointer
 import com.fasterxml.jackson.databind.ObjectMapper
+import it.pagopa.generated.wallets.model.WalletStatusErrorPatchRequest
 import it.pagopa.generated.wallets.model.WalletStatusErrorPatchRequestDetails
-import it.pagopa.generated.wallets.model.WalletStatusPatchRequest
 import it.pagopa.wallet.eventdispatcher.api.WalletsApi
 import it.pagopa.wallet.eventdispatcher.common.queue.QueueEvent
 import it.pagopa.wallet.eventdispatcher.configuration.SerializationConfiguration
@@ -54,7 +54,7 @@ class WalletExpirationQueueConsumerTest {
         given(checkPointer.success()).willReturn(Mono.empty())
         given(walletsApi.updateWalletStatus(any(), any())).willReturn(mono {})
         val expectedPatchRequest =
-            WalletStatusPatchRequest()
+            WalletStatusErrorPatchRequest()
                 .status("ERROR")
                 .details(WalletStatusErrorPatchRequestDetails().reason("Wallet expired."))
         StepVerifier.create(
@@ -92,7 +92,7 @@ class WalletExpirationQueueConsumerTest {
         given(walletsApi.updateWalletStatus(any(), any()))
             .willReturn(Mono.error(RuntimeException("Error patching wallet")))
         val expectedPatchRequest =
-            WalletStatusPatchRequest()
+            WalletStatusErrorPatchRequest()
                 .status("ERROR")
                 .details(WalletStatusErrorPatchRequestDetails().reason("Wallet expired."))
         StepVerifier.create(
