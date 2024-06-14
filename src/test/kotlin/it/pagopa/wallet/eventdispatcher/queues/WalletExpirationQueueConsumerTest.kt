@@ -2,15 +2,22 @@ package it.pagopa.wallet.eventdispatcher.queues
 
 import com.azure.spring.messaging.checkpoint.Checkpointer
 import com.fasterxml.jackson.databind.ObjectMapper
+import it.pagopa.generated.wallets.model.WalletStatusErrorPatchRequestDetails
+import it.pagopa.generated.wallets.model.WalletStatusPatchRequest
+import it.pagopa.wallet.eventdispatcher.api.WalletsApi
+import it.pagopa.wallet.eventdispatcher.common.queue.QueueEvent
 import it.pagopa.wallet.eventdispatcher.configuration.SerializationConfiguration
+import it.pagopa.wallet.eventdispatcher.domain.WalletCreatedEvent
+import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
+import java.time.OffsetDateTime
+import java.util.*
+import kotlinx.coroutines.reactor.mono
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
-import org.mockito.kotlin.given
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
+import org.mockito.kotlin.*
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 
@@ -21,31 +28,35 @@ class WalletExpirationQueueConsumerTest {
     private val objectMapper: ObjectMapper =
         serializationConfiguration.objectMapperBuilder().build()
     private val azureJsonSerializer = serializationConfiguration.azureJsonSerializer(objectMapper)
+    private val walletsApi: WalletsApi = mock()
 
     private val walletExpirationQueueConsumer =
-        WalletExpirationQueueConsumer(azureJsonSerializer = azureJsonSerializer)
+        WalletExpirationQueueConsumer(
+            azureJsonSerializer = azureJsonSerializer,
+            walletsApi = walletsApi
+        )
 
     @Test
-    fun `Should parse wallet created event successfully`() {
-        val queueEvent =
-            """
-            {
-                "data": {
-                    "type": "WalletCreated",
-                    "eventId": "bcfb7296-c53f-4840-9977-84a597fca1a0",
-                    "creationDate": 1718206463.077352000,
-                    "walletId": "a21e0037-251d-413b-b121-8899e368df7e"
-                },
-                "tracingInfo": {
-                    "traceparent": "traceparent",
-                    "tracestate": "tracestate",
-                    "baggage": "baggage"
-                }
-            }
-        """
-                .trimIndent()
-        val payload = queueEvent.toByteArray(StandardCharsets.UTF_8)
+    fun `Should process wallet create event successfully`() {
+        val walletId = UUID.randomUUID()
+        val walletCreationDate = OffsetDateTime.now()
+        val walletCreatedEvent =
+            QueueEvent(
+                WalletCreatedEvent(
+                    walletId = walletId.toString(),
+                    eventId = UUID.randomUUID().toString(),
+                    creationDate = walletCreationDate
+                )
+            )
+        val baos = ByteArrayOutputStream()
+        azureJsonSerializer.createInstance().serialize(baos, walletCreatedEvent)
+        val payload = baos.toByteArray()
         given(checkPointer.success()).willReturn(Mono.empty())
+        given(walletsApi.updateWalletStatus(any(), any())).willReturn(mono {})
+        val expectedPatchRequest =
+            WalletStatusPatchRequest()
+                .status("ERROR")
+                .details(WalletStatusErrorPatchRequestDetails().reason("Wallet expired."))
         StepVerifier.create(
                 walletExpirationQueueConsumer.messageReceiver(
                     payload = payload,
@@ -55,6 +66,52 @@ class WalletExpirationQueueConsumerTest {
             .expectNext(Unit)
             .verifyComplete()
         verify(checkPointer, times(1)).success()
+        verify(walletsApi, times(1))
+            .updateWalletStatus(
+                walletId = walletId,
+                walletStatusPatchRequest = expectedPatchRequest
+            )
+    }
+
+    @Test
+    fun `Should propagate error patching wallet status to ERROT`() {
+        val walletId = UUID.randomUUID()
+        val walletCreationDate = OffsetDateTime.now()
+        val walletCreatedEvent =
+            QueueEvent(
+                WalletCreatedEvent(
+                    walletId = walletId.toString(),
+                    eventId = UUID.randomUUID().toString(),
+                    creationDate = walletCreationDate
+                )
+            )
+        val baos = ByteArrayOutputStream()
+        azureJsonSerializer.createInstance().serialize(baos, walletCreatedEvent)
+        val payload = baos.toByteArray()
+        given(checkPointer.success()).willReturn(Mono.empty())
+        given(walletsApi.updateWalletStatus(any(), any()))
+            .willReturn(Mono.error(RuntimeException("Error patching wallet")))
+        val expectedPatchRequest =
+            WalletStatusPatchRequest()
+                .status("ERROR")
+                .details(WalletStatusErrorPatchRequestDetails().reason("Wallet expired."))
+        StepVerifier.create(
+                walletExpirationQueueConsumer.messageReceiver(
+                    payload = payload,
+                    checkPointer = checkPointer
+                )
+            )
+            .expectErrorMatches {
+                assertEquals("Error patching wallet", it.message)
+                true
+            }
+            .verify()
+        verify(checkPointer, times(1)).success()
+        verify(walletsApi, times(1))
+            .updateWalletStatus(
+                walletId = walletId,
+                walletStatusPatchRequest = expectedPatchRequest
+            )
     }
 
     @ParameterizedTest
