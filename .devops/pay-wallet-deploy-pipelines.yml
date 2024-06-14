@@ -367,6 +367,8 @@ stages:
     jobs:
       - job: "PROD_image"
         displayName: 'Build PROD image'
+        pool:
+          name: pagopa-prod-linux
         steps:
           - task: Docker@2
             displayName: "docker login for UAT"
