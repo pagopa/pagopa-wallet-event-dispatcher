@@ -79,7 +79,7 @@ microservice-chart:
     WALLET_SERVICE_URI: "http://pagopawalletservice-microservice-chart.pay-wallet.svc:8080"
     WALLET_SERVICE_READ_TIMEOUT: "10000"
     WALLET_SERVICE_CONNECTION_TIMEOUT: "10000"
-    WALLET_EXPIRATION_QUEUE_NAME: " pagopa-u-itn-pay-wallet-expiration-queue"
+    WALLET_EXPIRATION_QUEUE_NAME: "pagopa-u-itn-pay-wallet-expiration-queue"
   envSecret:
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     WALLET_STORAGE_QUEUE_KEY: wallet-storage-account-key
@@ -124,5 +124,5 @@ microservice-chart:
             labelSelector:
               matchLabels:
                 aadpodidbinding: pay-wallet-pod-identity
-            namespaces: ["pay-wallet"]
+            namespaces: [ "pay-wallet" ]
             topologyKey: topology.kubernetes.io/zone
