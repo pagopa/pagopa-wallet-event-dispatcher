@@ -1,17 +1,21 @@
 package it.pagopa.wallet.eventdispatcher.api
 
 import it.pagopa.generated.wallets.model.ClientId
+import it.pagopa.generated.wallets.model.WalletStatusErrorPatchRequest
 import it.pagopa.wallet.eventdispatcher.configuration.WebClientConfiguration
 import it.pagopa.wallet.eventdispatcher.configuration.properties.WalletsApiConfiguration
+import it.pagopa.wallet.eventdispatcher.exceptions.WalletPatchStatusError
 import java.time.OffsetDateTime
-import java.util.UUID
-import okhttp3.mockwebserver.Dispatcher
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
-import okhttp3.mockwebserver.RecordedRequest
+import java.util.*
+import okhttp3.mockwebserver.*
 import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
+import org.springframework.http.HttpStatusCode
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.kotlin.test.test
 
@@ -46,7 +50,7 @@ class WalletsApiTest {
         )
 
     @Test
-    fun `should complete successfully when Wallet response is success`() {
+    fun `should complete successfully wallet usage update when Wallet response is success`() {
         val walletId = UUID.randomUUID()
         mockWebService.dispatch {
             when (it.path) {
@@ -62,7 +66,7 @@ class WalletsApiTest {
     }
 
     @Test
-    fun `should fail when Wallet response is negative`() {
+    fun `should fail when Wallet response is negative for wallet usage update`() {
         val walletId = UUID.randomUUID()
         mockWebService.dispatch {
             when (it.path) {
@@ -74,6 +78,77 @@ class WalletsApiTest {
             .updateWalletUsage(walletId, ClientId.IO, OffsetDateTime.now())
             .test()
             .expectError(WebClientResponseException::class.java)
+            .verify()
+    }
+
+    @Test
+    fun `should handle successfully wallet update status 204 response`() {
+        val walletId = UUID.randomUUID()
+        mockWebService.dispatch {
+            when (it.path) {
+                "/wallets/$walletId" -> MockResponse().setResponseCode(204)
+                else -> MockResponse().setResponseCode(400)
+            }
+        }
+        walletsApi
+            .updateWalletStatus(
+                walletId = walletId,
+                walletStatusPatchRequest = WalletStatusErrorPatchRequest().status("ERROR")
+            )
+            .test()
+            .expectNext(Unit)
+            .verifyComplete()
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = [400, 404, 409, 500])
+    fun `should handle http error code while updating wallet status`(httpErrorStatusCode: Int) {
+        val walletId = UUID.randomUUID()
+        val walletUpdateStatus = "ERROR"
+        mockWebService.dispatch { MockResponse().setResponseCode(httpErrorStatusCode) }
+        walletsApi
+            .updateWalletStatus(
+                walletId = walletId,
+                walletStatusPatchRequest =
+                    WalletStatusErrorPatchRequest().status(walletUpdateStatus)
+            )
+            .test()
+            .expectErrorMatches {
+                assertTrue(it is WalletPatchStatusError)
+                assertEquals(
+                    "Error patching wallet: [$walletId] to status: [$walletUpdateStatus]",
+                    it.message
+                )
+                assertEquals(
+                    HttpStatusCode.valueOf(httpErrorStatusCode),
+                    (it as WalletPatchStatusError).getHttpResponseCode().get()
+                )
+                true
+            }
+            .verify()
+    }
+
+    @Test
+    fun `should handle timeout patching wallet status`() {
+        val walletId = UUID.randomUUID()
+        val walletUpdateStatus = "ERROR"
+        mockWebService.dispatch { MockResponse().setSocketPolicy(SocketPolicy.NO_RESPONSE) }
+        walletsApi
+            .updateWalletStatus(
+                walletId = walletId,
+                walletStatusPatchRequest =
+                    WalletStatusErrorPatchRequest().status(walletUpdateStatus)
+            )
+            .test()
+            .expectErrorMatches {
+                assertTrue(it is WalletPatchStatusError)
+                assertEquals(
+                    "Error patching wallet: [$walletId] to status: [$walletUpdateStatus]",
+                    it.message
+                )
+                assertTrue((it as WalletPatchStatusError).getHttpResponseCode().isEmpty)
+                true
+            }
             .verify()
     }
 

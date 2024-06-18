@@ -17,7 +17,7 @@ object Deps {
   const val ecsLoggingVersion = "1.5.0"
   const val googleFindBugs = "3.0.2"
   const val mockitoKotlin = "4.0.0"
-  const val openapiGenerator = "6.5.0"
+  const val openapiGenerator = "7.1.0"
   const val openapiDataBinding = "0.2.6"
   const val mockWebServer = "4.12.0"
 }
@@ -27,7 +27,7 @@ plugins {
   id("org.springframework.boot") version "3.0.5"
   id("io.spring.dependency-management") version "1.1.0"
   id("com.diffplug.spotless") version "6.18.0"
-  id("org.openapi.generator") version "6.3.0"
+  id("org.openapi.generator") version "7.1.0"
   id("org.sonarqube") version "4.4.1.3373"
   id("com.dipien.semantic-version") version "2.0.0" apply false
   kotlin("plugin.spring") version "1.8.10"
@@ -226,7 +226,8 @@ tasks.register<GenerateTask>("walletsApi") {
       "useSpringBoot3" to "true",
       "oas3" to "true",
       "generateSupportingFiles" to "false",
-      "useJakartaEe" to "true"
+      "useJakartaEe" to "true",
+      "useOneOfInterfaces" to "true"
     )
   )
 }

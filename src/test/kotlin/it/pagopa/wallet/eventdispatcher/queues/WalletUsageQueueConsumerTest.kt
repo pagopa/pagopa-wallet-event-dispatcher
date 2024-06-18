@@ -6,8 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import it.pagopa.generated.wallets.model.ClientId
 import it.pagopa.wallet.eventdispatcher.common.queue.QueueEvent
 import it.pagopa.wallet.eventdispatcher.configuration.SerializationConfiguration
-import it.pagopa.wallet.eventdispatcher.domain.WalletUpdateUsageError
 import it.pagopa.wallet.eventdispatcher.domain.WalletUsedEvent
+import it.pagopa.wallet.eventdispatcher.exceptions.WalletUpdateUsageError
 import it.pagopa.wallet.eventdispatcher.service.WalletUsageService
 import java.time.OffsetDateTime
 import java.util.*

@@ -2,7 +2,7 @@ package it.pagopa.wallet.eventdispatcher.service
 
 import it.pagopa.generated.wallets.model.ClientId
 import it.pagopa.wallet.eventdispatcher.api.WalletsApi
-import it.pagopa.wallet.eventdispatcher.domain.WalletUpdateUsageError
+import it.pagopa.wallet.eventdispatcher.exceptions.WalletUpdateUsageError
 import java.time.OffsetDateTime
 import java.util.*
 import org.junit.jupiter.api.BeforeEach
