@@ -76,7 +76,7 @@ microservice-chart:
     WALLET_STORAGE_QUEUE_ACCOUNT_NAME: pagopauitnpaywalletsa
     WALLET_STORAGE_QUEUE_ENDPOINT: https://pagopauitnpaywalletsa.queue.core.windows.net/pagopauitnpaywalletsa
     WALLET_USAGE_QUEUE_NAME: pagopa-u-itn-pay-wallet-usage-update-queue
-    WALLET_SERVICE_URI: "http://pagopawalletservice-microservice-chart.pay-wallet.svc:8080"
+    WALLET_SERVICE_URI: "http://pagopa-pay-wallet-microservice.pay-wallet.svc:8080"
     WALLET_SERVICE_READ_TIMEOUT: "10000"
     WALLET_SERVICE_CONNECTION_TIMEOUT: "10000"
     WALLET_EXPIRATION_QUEUE_NAME: "pagopa-u-itn-pay-wallet-expiration-queue"
