@@ -204,7 +204,7 @@ tasks.register<GenerateTask>("walletsApi") {
 
   generatorName.set("java")
   remoteInputSpec.set(
-    "https://raw.githubusercontent.com/pagopa/pagopa-wallet-service/CHK-2949-openapi-patch-status/api-spec/wallet-api.yaml"
+    "https://raw.githubusercontent.com/pagopa/pagopa-wallet-service/main/api-spec/wallet-api.yaml"
   )
   outputDir.set(layout.buildDirectory.dir("generated").get().asFile.path)
   apiPackage.set("it.pagopa.generated.wallets.api")
