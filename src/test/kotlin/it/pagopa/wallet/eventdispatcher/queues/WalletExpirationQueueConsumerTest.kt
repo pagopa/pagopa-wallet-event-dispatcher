@@ -8,6 +8,7 @@ import it.pagopa.wallet.eventdispatcher.api.WalletsApi
 import it.pagopa.wallet.eventdispatcher.common.queue.QueueEvent
 import it.pagopa.wallet.eventdispatcher.configuration.SerializationConfiguration
 import it.pagopa.wallet.eventdispatcher.domain.WalletCreatedEvent
+import it.pagopa.wallet.eventdispatcher.utils.TracingMock
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
 import java.time.OffsetDateTime
@@ -33,7 +34,8 @@ class WalletExpirationQueueConsumerTest {
     private val walletExpirationQueueConsumer =
         WalletExpirationQueueConsumer(
             azureJsonSerializer = azureJsonSerializer,
-            walletsApi = walletsApi
+            walletsApi = walletsApi,
+            tracing = TracingMock.mock()
         )
 
     @Test

@@ -13,6 +13,7 @@ import it.pagopa.wallet.eventdispatcher.common.queue.QueueEvent
 import it.pagopa.wallet.eventdispatcher.configuration.QueueConsumerConfiguration
 import it.pagopa.wallet.eventdispatcher.domain.WalletCreatedEvent
 import it.pagopa.wallet.eventdispatcher.domain.WalletEvent
+import it.pagopa.wallet.eventdispatcher.utils.Tracing
 import java.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.integration.annotation.ServiceActivator
@@ -24,7 +25,8 @@ import reactor.core.publisher.Mono
 @Service
 class WalletExpirationQueueConsumer(
     azureJsonSerializer: JsonSerializerProvider,
-    val walletsApi: WalletsApi
+    private val walletsApi: WalletsApi,
+    private val tracing: Tracing,
 ) {
 
     private val azureSerializer = azureJsonSerializer.createInstance()
@@ -35,6 +37,7 @@ class WalletExpirationQueueConsumer(
     }
 
     private val logger = LoggerFactory.getLogger(WalletExpirationQueueConsumer::class.java)
+    private val consumerSpanName = WalletExpirationQueueConsumer::class.java.simpleName
 
     @ServiceActivator(inputChannel = INPUT_CHANNEL, outputChannel = "nullChannel")
     fun messageReceiver(
@@ -46,29 +49,34 @@ class WalletExpirationQueueConsumer(
             .then(
                 BinaryData.fromBytes(payload).toObjectAsync(EVENT_TYPE_REFERENCE, azureSerializer)
             )
-            .map { it.tracingInfo to it.data as WalletCreatedEvent }
-            .flatMap { (_, walletCreatedEvent) ->
-                val walletId = walletCreatedEvent.walletId
-                val walletCreationDate = walletCreatedEvent.creationDate
-                logger.info(
-                    "Processing wallet expiration event for wallet with id: [{}], created at: [{}]",
-                    walletId,
-                    walletCreationDate
-                )
-                walletsApi.updateWalletStatus(
-                    walletId = UUID.fromString(walletId),
-                    walletStatusPatchRequest =
-                        WalletStatusErrorPatchRequest()
-                            .status(WalletStatus.ERROR.toString())
-                            .details(
-                                WalletStatusErrorPatchRequestDetails()
-                                    .reason("Wallet expired. Creation date: $walletCreationDate")
-                            )
-                )
+            .flatMap {
+                tracing.traceMonoWithRemoteSpan(consumerSpanName, it.tracingInfo) {
+                    handleWalletCreatedEvent(it.data as WalletCreatedEvent)
+                }
             }
             .doOnError { error ->
                 logger.error("Exception processing wallet expiration event", error)
             }
             .thenReturn(Unit)
+    }
+
+    private fun handleWalletCreatedEvent(event: WalletCreatedEvent): Mono<Unit> {
+        val walletId = event.walletId
+        val walletCreationDate = event.creationDate
+        logger.info(
+            "Processing wallet expiration event for wallet with id: [{}], created at: [{}]",
+            walletId,
+            walletCreationDate
+        )
+        return walletsApi.updateWalletStatus(
+            walletId = UUID.fromString(walletId),
+            walletStatusPatchRequest =
+                WalletStatusErrorPatchRequest()
+                    .status(WalletStatus.ERROR.toString())
+                    .details(
+                        WalletStatusErrorPatchRequestDetails()
+                            .reason("Wallet expired. Creation date: $walletCreationDate")
+                    )
+        )
     }
 }

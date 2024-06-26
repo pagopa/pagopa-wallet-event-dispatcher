@@ -20,6 +20,8 @@ object Deps {
   const val openapiGenerator = "7.1.0"
   const val openapiDataBinding = "0.2.6"
   const val mockWebServer = "4.12.0"
+  const val openTelemetryVersion = "1.37.0"
+  const val openTelemetryInstrumentationVersion = "2.4.0-alpha"
 }
 
 plugins {
@@ -52,6 +54,13 @@ dependencyManagement {
   // Kotlin BOM
   imports { mavenBom("org.jetbrains.kotlin:kotlin-bom:${Deps.kotlinBom}") }
   imports { mavenBom("org.jetbrains.kotlinx:kotlinx-coroutines-bom:${Deps.kotlinCoroutinesBom}") }
+  // otel BOM
+  imports {
+    mavenBom("io.opentelemetry:opentelemetry-bom:${Deps.openTelemetryVersion}")
+    mavenBom(
+      "io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom-alpha:${Deps.openTelemetryInstrumentationVersion}"
+    )
+  }
 }
 
 dependencies {
@@ -88,6 +97,9 @@ dependencies {
 
   // ECS logback encoder
   implementation("co.elastic.logging:logback-ecs-encoder:${Deps.ecsLoggingVersion}")
+  // otel api
+  implementation("io.opentelemetry:opentelemetry-api")
+  implementation("io.opentelemetry.instrumentation:opentelemetry-reactor-3.1")
 
   // openapi
   implementation("org.openapitools:openapi-generator-gradle-plugin:${Deps.openapiGenerator}")
