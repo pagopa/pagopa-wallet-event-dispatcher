@@ -38,12 +38,12 @@ class Tracing(private val openTelemetry: OpenTelemetry, private val tracer: Trac
             { createSpanWithRemoteLink(spanName, tracingInfo) },
             { span ->
                 val context = Context.current().with(span)
-                ContextPropagationOperator.runWithContext(
-                    operation().contextWrite {
-                        reactor.util.context.Context.of(PARENT_TRACE_CONTEXT_KEY, context)
-                    },
-                    context
-                )
+                val tracedOperation =
+                    operation()
+                        .contextWrite(
+                            reactor.util.context.Context.of(PARENT_TRACE_CONTEXT_KEY, context)
+                        )
+                ContextPropagationOperator.runWithContext(tracedOperation, context)
             },
             { span -> span.end() }
         )

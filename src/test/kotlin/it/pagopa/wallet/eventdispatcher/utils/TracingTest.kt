@@ -40,6 +40,8 @@ class TracingTest {
                 val map = it.getArgument<Map<Any, Any>>(1)
                 val setter = it.getArgument<TextMapSetter<Map<Any, Any>>>(2)
                 setter.set(map, Tracing.TRACEPARENT, "mock_traceparent")
+                setter.set(map, Tracing.TRACESTATE, "mock_tracestate")
+                setter.set(map, Tracing.BAGGAGE, "mock_baggage")
                 return@willAnswer null
             }
 
@@ -77,7 +79,7 @@ class TracingTest {
         val operation = Mono.error<Int>(expected)
 
         tracing
-            .traceMonoWithRemoteSpan("test", null) { operation }
+            .traceMonoWithRemoteSpan("test", MOCK_TRACING_INFO) { operation }
             .test()
             .expectErrorMatches { it.equals(expected) }
             .verify()
