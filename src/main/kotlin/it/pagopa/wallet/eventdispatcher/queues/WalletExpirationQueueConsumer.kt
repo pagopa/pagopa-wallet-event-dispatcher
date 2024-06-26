@@ -46,9 +46,9 @@ class WalletExpirationQueueConsumer(
     ): Mono<Unit> {
         return checkPointer
             .successWithLog()
-            .then(
+            .flatMap {
                 BinaryData.fromBytes(payload).toObjectAsync(EVENT_TYPE_REFERENCE, azureSerializer)
-            )
+            }
             .flatMap {
                 tracing.traceMonoWithRemoteSpan(consumerSpanName, it.tracingInfo) {
                     handleWalletCreatedEvent(it.data as WalletCreatedEvent)
