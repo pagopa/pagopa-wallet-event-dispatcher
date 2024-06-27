@@ -13,5 +13,5 @@ fun Checkpointer.successWithLog(message: String? = null): Mono<Unit> {
     return this.success()
         .doOnSuccess { CommonsLogger.logger.info(message ?: "Checkpoint successfully") }
         .doOnError { CommonsLogger.logger.error("Error performing checkpoint", it) }
-        .map {}
+        .thenReturn(Unit)
 }

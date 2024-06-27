@@ -11,6 +11,7 @@ import it.pagopa.wallet.eventdispatcher.configuration.QueueConsumerConfiguration
 import it.pagopa.wallet.eventdispatcher.domain.WalletEvent
 import it.pagopa.wallet.eventdispatcher.domain.WalletUsedEvent
 import it.pagopa.wallet.eventdispatcher.service.WalletUsageService
+import it.pagopa.wallet.eventdispatcher.utils.Tracing
 import org.slf4j.LoggerFactory
 import org.springframework.integration.annotation.ServiceActivator
 import org.springframework.messaging.handler.annotation.Header
@@ -21,6 +22,7 @@ import reactor.core.publisher.Mono
 @Service
 class WalletUsageQueueConsumer(
     private val walletUsageService: WalletUsageService,
+    private val tracing: Tracing,
     azureJsonSerializer: JsonSerializerProvider
 ) {
 
@@ -32,6 +34,7 @@ class WalletUsageQueueConsumer(
     }
 
     private val logger = LoggerFactory.getLogger(WalletUsageQueueConsumer::class.java)
+    private val consumerSpanName = WalletUsageQueueConsumer::class.java.simpleName
 
     @ServiceActivator(inputChannel = INPUT_CHANNEL, outputChannel = "nullChannel")
     fun messageReceiver(
@@ -43,17 +46,21 @@ class WalletUsageQueueConsumer(
             .then(
                 BinaryData.fromBytes(payload).toObjectAsync(EVENT_TYPE_REFERENCE, azureSerializer)
             )
-            .map { it.data }
-            .cast(WalletUsedEvent::class.java)
-            .flatMap { event ->
-                walletUsageService.updateWalletUsage(
-                    event.walletId,
-                    ClientId.fromValue(event.clientId),
-                    event.creationDate
-                )
+            .flatMap {
+                tracing.traceMonoWithRemoteSpan(consumerSpanName, it.tracingInfo) {
+                    handleWalletUsedEvent(it.data as WalletUsedEvent)
+                }
             }
             .doOnError { error ->
                 logger.error("Unexpected failure during event processing", error)
             }
+    }
+
+    private fun handleWalletUsedEvent(event: WalletUsedEvent): Mono<Unit> {
+        return walletUsageService.updateWalletUsage(
+            event.walletId,
+            ClientId.fromValue(event.clientId),
+            event.creationDate
+        )
     }
 }

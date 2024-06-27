@@ -23,7 +23,7 @@ WORKDIR /app/
 ARG EXTRACTED=/workspace/app/build/extracted
 
 # OpenTelemetry agent
-ADD --chown=user https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.1.0/opentelemetry-javaagent.jar .
+ADD --chown=user https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.3.0/opentelemetry-javaagent.jar .
 
 COPY --from=build --chown=user ${EXTRACTED}/dependencies/ ./
 RUN true
@@ -34,4 +34,4 @@ RUN true
 COPY --from=build --chown=user ${EXTRACTED}/application/ ./
 RUN true
 
-ENTRYPOINT ["java","-javaagent:opentelemetry-javaagent.jar","--enable-preview","org.springframework.boot.loader.JarLauncher"]
+ENTRYPOINT ["java","-javaagent:opentelemetry-javaagent.jar","org.springframework.boot.loader.launch.JarLauncher"]

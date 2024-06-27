@@ -9,6 +9,7 @@ import it.pagopa.wallet.eventdispatcher.configuration.SerializationConfiguration
 import it.pagopa.wallet.eventdispatcher.domain.WalletUsedEvent
 import it.pagopa.wallet.eventdispatcher.exceptions.WalletUpdateUsageError
 import it.pagopa.wallet.eventdispatcher.service.WalletUsageService
+import it.pagopa.wallet.eventdispatcher.utils.TracingMock
 import java.time.OffsetDateTime
 import java.util.*
 import org.junit.jupiter.api.BeforeEach
@@ -30,7 +31,8 @@ class WalletUsageQueueConsumerTest {
     private val consumer =
         WalletUsageQueueConsumer(
             walletUsageService,
-            SerializationConfiguration().azureJsonSerializer(objectMapper)
+            TracingMock.mock(),
+            SerializationConfiguration().azureJsonSerializer(objectMapper),
         )
 
     @BeforeEach
