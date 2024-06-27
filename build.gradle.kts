@@ -10,8 +10,8 @@ description = "pagopa-wallet-event-dispatcher-service"
 object Deps {
   const val kotlinBom = "1.7.22"
   const val kotlinCoroutinesBom = "1.6.4"
-  const val springBootVersion = "3.0.5"
-  const val springCloudAzureVersion = "5.10.0"
+  const val springBootVersion = "3.3.1"
+  const val springCloudAzureVersion = "5.13.0"
   const val vavrVersion = "0.10.4"
   const val nettyMacosResolver = "4.1.90.Final"
   const val ecsLoggingVersion = "1.5.0"
@@ -21,13 +21,13 @@ object Deps {
   const val openapiDataBinding = "0.2.6"
   const val mockWebServer = "4.12.0"
   const val openTelemetryVersion = "1.37.0"
-  const val openTelemetryInstrumentationVersion = "2.4.0-alpha"
+  const val openTelemetryInstrumentationVersion = "2.3.0-alpha"
 }
 
 plugins {
   id("java")
-  id("org.springframework.boot") version "3.0.5"
-  id("io.spring.dependency-management") version "1.1.0"
+  id("org.springframework.boot") version "3.3.1"
+  id("io.spring.dependency-management") version "1.1.5"
   id("com.diffplug.spotless") version "6.18.0"
   id("org.openapi.generator") version "7.1.0"
   id("org.sonarqube") version "4.4.1.3373"
@@ -79,7 +79,6 @@ dependencies {
 
   implementation("org.springframework.boot:spring-boot-starter-actuator")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
-  implementation("org.apache.httpcomponents:httpclient")
   implementation("com.google.code.findbugs:jsr305:${Deps.googleFindBugs}")
   implementation("org.projectlombok:lombok")
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
@@ -110,7 +109,7 @@ dependencies {
 
   runtimeOnly("org.springframework.boot:spring-boot-devtools")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
-  testImplementation("org.mockito:mockito-inline")
+  testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("io.projectreactor:reactor-test")
   // Kotlin dependencies
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")

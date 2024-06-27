@@ -14,7 +14,7 @@ services:
       - pagopa-wallet-net
 
   storage:
-    image: mcr.microsoft.com/azure-storage/azurite:3.29.0
+    image: mcr.microsoft.com/azure-storage/azurite:3.31.0
     container_name: azurite
     ports:
       - "10000:10000"
