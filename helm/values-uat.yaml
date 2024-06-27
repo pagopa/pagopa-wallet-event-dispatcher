@@ -111,3 +111,6 @@
 #        pullPolicy: Always
 #      envConfig: {}
 #      envSecret: {}
+microservice-chart:
+  image:
+    tag: 0.4.1

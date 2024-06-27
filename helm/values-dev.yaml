@@ -95,3 +95,6 @@
 #                operator: In
 #                values:
 #                  - user
+microservice-chart:
+  image:
+    tag: 0.4.1
