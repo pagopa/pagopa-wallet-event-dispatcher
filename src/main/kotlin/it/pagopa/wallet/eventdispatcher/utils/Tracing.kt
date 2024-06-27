@@ -10,6 +10,7 @@ import io.opentelemetry.context.propagation.TextMapGetter
 import io.opentelemetry.instrumentation.reactor.v3_1.ContextPropagationOperator
 import it.pagopa.wallet.eventdispatcher.common.queue.TracingInfo
 import org.slf4j.LoggerFactory
+import reactor.core.CoreSubscriber
 import reactor.core.publisher.Mono
 
 class Tracing(private val openTelemetry: OpenTelemetry, private val tracer: Tracer) {
@@ -39,14 +40,31 @@ class Tracing(private val openTelemetry: OpenTelemetry, private val tracer: Trac
             { span ->
                 val context = Context.current().with(span)
                 val tracedOperation =
-                    operation()
-                        .contextWrite(
-                            reactor.util.context.Context.of(PARENT_TRACE_CONTEXT_KEY, context)
-                        )
+                    wrapMonoWithOpenTelemetryContext(
+                        context,
+                        operation()
+                            .contextWrite(
+                                reactor.util.context.Context.of(PARENT_TRACE_CONTEXT_KEY, context)
+                            ),
+                    )
                 ContextPropagationOperator.runWithContext(tracedOperation, context)
             },
             { span -> span.end() }
         )
+    }
+
+    /**
+     * As suggested here webclient use context available at subscribe time. This wrapper makes OTEL
+     * context active at subscription time. The side effect is that any child operation now is
+     * related to current active Span as a parent. see
+     * https://github.com/open-telemetry/opentelemetry-java-instrumentation/issues/10011
+     */
+    private fun <T> wrapMonoWithOpenTelemetryContext(context: Context, mono: Mono<T>): Mono<T> {
+        return object : Mono<T>() {
+            override fun subscribe(coreSubscriber: CoreSubscriber<in T>) {
+                context.makeCurrent().use { mono.subscribe(coreSubscriber) }
+            }
+        }
     }
 
     private fun createSpanWithRemoteLink(spanName: String, tracingInfo: TracingInfo?): Span {
