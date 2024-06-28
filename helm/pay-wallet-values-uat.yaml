@@ -92,7 +92,7 @@ microservice-chart:
   canaryDelivery:
     create: false
     ingress:
-      create: true
+      create: false
       canary:
         type: bluegreen
     service:
@@ -100,10 +100,14 @@ microservice-chart:
     deployment:
       create: true
       image:
-        repository: pagopauitncoreacr.azurecr.io/pagopawalleteventdispatcher
+        repository: pagopauitncoreacr.azurecr.io/pagopapaymentwalleteventdispatcherservice
         tag: "latest"
         pullPolicy: Always
-      envConfig: { }
+      envConfig:
+        OTEL_SERVICE_NAME: "pagopa-payment-wallet-event-dispatcher-service-blue"
+        WALLET_USAGE_QUEUE_NAME: "pagopa-u-itn-pay-wallet-usage-update-queue-b"
+        WALLET_EXPIRATION_QUEUE_NAME: "pagopa-u-itn-pay-wallet-expiration-queue-b"
+        WALLET_SERVICE_URI: "http://beta-pagopa-pay-wallet-microservice.pay-wallet.svc:8080"
       envSecret: { }
   tolerations:
     - effect: "NoSchedule"
