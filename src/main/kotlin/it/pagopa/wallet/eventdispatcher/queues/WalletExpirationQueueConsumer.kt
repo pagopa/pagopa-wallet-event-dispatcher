@@ -14,6 +14,7 @@ import it.pagopa.wallet.eventdispatcher.configuration.QueueConsumerConfiguration
 import it.pagopa.wallet.eventdispatcher.domain.WalletCreatedEvent
 import it.pagopa.wallet.eventdispatcher.domain.WalletEvent
 import it.pagopa.wallet.eventdispatcher.utils.Tracing
+import it.pagopa.wallet.eventdispatcher.utils.TracingKeys
 import java.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.integration.annotation.ServiceActivator
@@ -28,7 +29,6 @@ class WalletExpirationQueueConsumer(
     private val walletsApi: WalletsApi,
     private val tracing: Tracing,
 ) {
-
     private val azureSerializer = azureJsonSerializer.createInstance()
 
     companion object {
@@ -68,15 +68,22 @@ class WalletExpirationQueueConsumer(
             walletId,
             walletCreationDate
         )
-        return walletsApi.updateWalletStatus(
-            walletId = UUID.fromString(walletId),
-            walletStatusPatchRequest =
-                WalletStatusErrorPatchRequest()
-                    .status(WalletStatus.ERROR.toString())
-                    .details(
-                        WalletStatusErrorPatchRequestDetails()
-                            .reason("Wallet expired. Creation date: $walletCreationDate")
-                    )
-        )
+        return tracing.customizeSpan(
+            walletsApi.updateWalletStatus(
+                walletId = UUID.fromString(walletId),
+                walletStatusPatchRequest =
+                    WalletStatusErrorPatchRequest()
+                        .status(WalletStatus.ERROR.toString())
+                        .details(
+                            WalletStatusErrorPatchRequestDetails()
+                                .reason("Wallet expired. Creation date: $walletCreationDate")
+                        )
+            )
+        ) {
+            setAttribute(
+                TracingKeys.PATCH_STATE_TRIGGER_KEY,
+                TracingKeys.WalletPatchTriggerKind.WALLET_EXPIRE.name
+            )
+        }
     }
 }

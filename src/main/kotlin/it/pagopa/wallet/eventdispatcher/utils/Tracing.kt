@@ -30,6 +30,14 @@ class Tracing(private val openTelemetry: OpenTelemetry, private val tracer: Trac
         const val BAGGAGE: String = "baggage"
     }
 
+    fun <T> customizeSpan(mono: Mono<T>, f: Span.() -> Unit): Mono<T> {
+        return Mono.using(
+            { Span.fromContext(Context.current()) },
+            { span -> f(span).let { mono } },
+            {}
+        )
+    }
+
     fun <T> traceMonoWithRemoteSpan(
         spanName: String,
         tracingInfo: TracingInfo?,
