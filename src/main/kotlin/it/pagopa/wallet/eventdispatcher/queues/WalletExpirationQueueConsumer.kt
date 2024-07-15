@@ -89,18 +89,26 @@ class WalletExpirationQueueConsumer(
                         )
                     }
                 }
-                .doOnError(WalletPatchStatusError::class.java) {
+                .doOnError {
                     tracing.customizeSpan<Unit>(Mono.error(it)) {
                         setAttribute(
                             TracingKeys.PATCH_STATE_OUTCOME_KEY,
                             TracingKeys.WalletPatchOutcome.FAIL.name
                         )
-                        setAttribute(
-                            TracingKeys.PATCH_STATE_OUTCOME_STATUS_CODE_KEY,
-                            it.getHttpResponseCode()
-                                .map { code -> code.value().toString() }
-                                .orElse("")
-                        )
+                        when (it) {
+                            is WalletPatchStatusError ->
+                                setAttribute(
+                                    TracingKeys.PATCH_STATE_OUTCOME_FAIL_STATUS_CODE_KEY,
+                                    it.getHttpResponseCode()
+                                        .map { code -> code.value().toString() }
+                                        .orElse("")
+                                )
+                            else ->
+                                setAttribute(
+                                    TracingKeys.PATCH_STATE_OUTCOME_FAIL_STATUS_CODE_KEY,
+                                    ""
+                                )
+                        }
                     }
                 }
         ) {
