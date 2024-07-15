@@ -13,6 +13,7 @@ import it.pagopa.wallet.eventdispatcher.common.queue.QueueEvent
 import it.pagopa.wallet.eventdispatcher.configuration.QueueConsumerConfiguration
 import it.pagopa.wallet.eventdispatcher.domain.WalletCreatedEvent
 import it.pagopa.wallet.eventdispatcher.domain.WalletEvent
+import it.pagopa.wallet.eventdispatcher.exceptions.WalletPatchStatusError
 import it.pagopa.wallet.eventdispatcher.utils.Tracing
 import it.pagopa.wallet.eventdispatcher.utils.TracingKeys
 import java.util.*
@@ -69,17 +70,41 @@ class WalletExpirationQueueConsumer(
             walletCreationDate
         )
         return tracing.customizeSpan(
-            walletsApi.updateWalletStatus(
-                walletId = UUID.fromString(walletId),
-                walletStatusPatchRequest =
-                    WalletStatusErrorPatchRequest()
-                        .status(WalletStatus.ERROR.toString())
-                        .details(
-                            WalletStatusErrorPatchRequestDetails()
-                                .reason("Wallet expired. Creation date: $walletCreationDate")
+            walletsApi
+                .updateWalletStatus(
+                    walletId = UUID.fromString(walletId),
+                    walletStatusPatchRequest =
+                        WalletStatusErrorPatchRequest()
+                            .status(WalletStatus.ERROR.toString())
+                            .details(
+                                WalletStatusErrorPatchRequestDetails()
+                                    .reason("Wallet expired. Creation date: $walletCreationDate")
+                            )
+                )
+                .flatMap {
+                    tracing.customizeSpan(Mono.just(it)) {
+                        setAttribute(
+                            TracingKeys.PATCH_STATE_OUTCOME_KEY,
+                            TracingKeys.WalletPatchOutcome.OK.name
                         )
-            )
+                    }
+                }
+                .doOnError(WalletPatchStatusError::class.java) {
+                    tracing.customizeSpan<Unit>(Mono.error(it)) {
+                        setAttribute(
+                            TracingKeys.PATCH_STATE_OUTCOME_KEY,
+                            TracingKeys.WalletPatchOutcome.FAIL.name
+                        )
+                        setAttribute(
+                            TracingKeys.PATCH_STATE_OUTCOME_STATUS_CODE_KEY,
+                            it.getHttpResponseCode()
+                                .map { code -> code.value().toString() }
+                                .orElse("")
+                        )
+                    }
+                }
         ) {
+            setAttribute(TracingKeys.PATCH_STATE_WALLET_ID_KEY, event.walletId)
             setAttribute(
                 TracingKeys.PATCH_STATE_TRIGGER_KEY,
                 TracingKeys.WalletPatchTriggerKind.WALLET_EXPIRE.name
