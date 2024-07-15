@@ -80,7 +80,7 @@ class WalletExpirationQueueConsumerTest {
     }
 
     @Test
-    fun `Should propagate error patching wallet status to ERROT`() {
+    fun `Should propagate error patching wallet status to ERROR`() {
         val walletId = UUID.randomUUID()
         val creationDate = "2024-06-14T15:04:56.908428Z"
         val walletCreationDate = OffsetDateTime.parse(creationDate)

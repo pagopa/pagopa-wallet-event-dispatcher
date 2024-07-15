@@ -20,6 +20,9 @@ object TracingMock {
             }
             .willAnswer { it.getArgument<() -> Mono<*>>(2).invoke() }
 
+        given { mockedTracingUtils.customizeSpan(any<Mono<*>>(), any()) }
+            .willAnswer { it.getArgument<Mono<*>>(0) }
+
         return mockedTracingUtils
     }
 }
