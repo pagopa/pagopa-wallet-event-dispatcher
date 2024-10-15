@@ -67,6 +67,8 @@ If you want to customize the application environment, reference this table:
 | WALLET_SERVICE_URI                                   | Wallet service endpoint                                                                    | string |                         |
 | WALLET_SERVICE_READ_TIMEOUT                          | Wallet service read timeout                                                                | number | 10000                   |
 | WALLET_SERVICE_CONNECTION_TIMEOUT                    | Wallet service connection timeout                                                          | number | 10000                   |
+| AZURE_EVENTHUB_CONNECTION_STRING                     | Azure event hub connection string                                                          | string |                         |
+| AZURE_EVENTHUB_NAME                                  | Event hub name                                                                             | string |                         |
 
 ### Run docker container
 
