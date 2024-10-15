@@ -70,6 +70,7 @@ dependencies {
 
   // spring integration
   implementation("org.springframework.boot:spring-boot-starter-integration")
+  implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
 
   // azure
   implementation("com.azure.spring:spring-cloud-azure-starter-storage-queue")
@@ -116,6 +117,10 @@ dependencies {
   testImplementation("org.mockito.kotlin:mockito-kotlin:${Deps.mockitoKotlin}")
 
   testImplementation("com.squareup.okhttp3:mockwebserver:${Deps.mockWebServer}")
+
+  // Azure Event Hubs
+  implementation("com.azure:azure-messaging-eventhubs:5.18.0")
+  implementation("com.azure:azure-identity:1.11.2")
 }
 
 configurations {
