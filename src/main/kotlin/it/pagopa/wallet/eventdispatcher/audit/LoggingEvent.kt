@@ -2,9 +2,7 @@ package it.pagopa.wallet.eventdispatcher.audit
 
 import java.time.Instant
 import java.util.*
-import org.springframework.data.mongodb.core.mapping.Document
 
-@Document("payment-wallets-log-events")
 sealed class LoggingEvent(val id: String, val timestamp: String) {
     constructor() : this(UUID.randomUUID().toString(), Instant.now().toString())
 }
