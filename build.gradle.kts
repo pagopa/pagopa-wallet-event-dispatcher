@@ -119,7 +119,7 @@ dependencies {
   testImplementation("com.squareup.okhttp3:mockwebserver:${Deps.mockWebServer}")
 
   // Azure Event Hubs (Kafka)
-  implementation("org.springframework.kafka:spring-kafka:3.3.0")
+  implementation("org.springframework.kafka:spring-kafka")
   implementation("org.apache.kafka:kafka-clients")
 }
 
