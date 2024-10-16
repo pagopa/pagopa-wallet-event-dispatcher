@@ -120,6 +120,7 @@ dependencies {
   // Azure Event Hubs (Kafka)
   implementation("org.springframework.kafka:spring-kafka")
   implementation("org.apache.kafka:kafka-clients")
+  implementation("io.projectreactor.kafka:reactor-kafka:1.3.23")
 }
 
 configurations {

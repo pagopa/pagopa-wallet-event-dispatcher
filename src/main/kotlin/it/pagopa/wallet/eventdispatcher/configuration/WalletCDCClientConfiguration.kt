@@ -5,10 +5,10 @@ import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.kafka.core.DefaultKafkaProducerFactory
-import org.springframework.kafka.core.KafkaTemplate
+import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
 import org.springframework.kafka.support.serializer.JsonSerializer
+import reactor.kafka.sender.SenderOptions
 
 @Configuration
 class WalletCDCClientConfiguration {
@@ -16,7 +16,7 @@ class WalletCDCClientConfiguration {
     @Bean(name = ["cdcEventHubClient"])
     fun cdcKafkaTemplate(
         walletCDCConfiguration: WalletCDCConfiguration
-    ): KafkaTemplate<String, Any> {
+    ): ReactiveKafkaProducerTemplate<String, Any> {
         val configProps =
             mapOf(
                 ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to walletCDCConfiguration.bootstrapServers,
@@ -25,8 +25,8 @@ class WalletCDCClientConfiguration {
                 ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS to
                     ErrorHandlingDeserializer::class.java
             )
-        val producerFactory = DefaultKafkaProducerFactory<String, Any>(configProps)
-        return KafkaTemplate(producerFactory)
+        val senderOptions = SenderOptions.create<String, Any>(configProps)
+        return ReactiveKafkaProducerTemplate(senderOptions)
     }
 
     @Bean
