@@ -118,9 +118,9 @@ dependencies {
 
   testImplementation("com.squareup.okhttp3:mockwebserver:${Deps.mockWebServer}")
 
-  // Azure Event Hubs
-  implementation("com.azure:azure-messaging-eventhubs:5.18.0")
-  implementation("com.azure:azure-identity:1.11.2")
+  // Azure Event Hubs (Kafka)
+  implementation("org.springframework.kafka:spring-kafka:3.3.0")
+  implementation("org.apache.kafka:kafka-clients")
 }
 
 configurations {
