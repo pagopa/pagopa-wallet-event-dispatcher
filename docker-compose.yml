@@ -84,5 +84,7 @@ services:
 
 networks:
   pagopa-wallet-net:
+    name: pagopa-wallet-net
     driver: bridge
-    external: true
+    driver_opts:
+      com.docker.network.driver.mtu: 1450
