@@ -67,6 +67,7 @@ If you want to customize the application environment, reference this table:
 | WALLET_SERVICE_URI                                   | Wallet service endpoint                                                                    | string |                         |
 | WALLET_SERVICE_READ_TIMEOUT                          | Wallet service read timeout                                                                | number | 10000                   |
 | WALLET_SERVICE_CONNECTION_TIMEOUT                    | Wallet service connection timeout                                                          | number | 10000                   |
+| WALLET_CDC_QUEUE_NAME                                | Storage queue name for event sent by cdc hub                                               | string | wallet-cdc-queue        |
 
 ### Run docker container
 

@@ -2,7 +2,6 @@ package it.pagopa.wallet.eventdispatcher.common.serialization
 
 import com.azure.core.util.BinaryData
 import com.azure.core.util.serializer.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
 import it.pagopa.wallet.eventdispatcher.common.queue.QueueEvent
 import it.pagopa.wallet.eventdispatcher.common.queue.TracingInfo
 import it.pagopa.wallet.eventdispatcher.configuration.SerializationConfiguration
@@ -16,6 +15,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import reactor.kotlin.test.test
 
 class WalletEventMixinTest {
@@ -85,8 +85,9 @@ class WalletEventMixinTest {
     }
 
     private val serializationConfiguration = SerializationConfiguration()
-    private val objectMapper: ObjectMapper =
-        serializationConfiguration.objectMapperBuilder().build()
+    private val objectMapperBuilder: Jackson2ObjectMapperBuilder =
+        serializationConfiguration.objectMapperBuilder()
+    private val objectMapper = serializationConfiguration.objectMapper(objectMapperBuilder)
     private val azureJsonSerializer =
         serializationConfiguration.azureJsonSerializer(objectMapper).createInstance()
 
