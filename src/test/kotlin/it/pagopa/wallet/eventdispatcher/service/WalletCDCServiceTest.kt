@@ -32,9 +32,9 @@ class WalletCDCServiceTest {
     @Test
     fun `should log error when failing to send CDC event to Kafka`() {
         val event = WalletAddedEvent(UUID.randomUUID().toString())
-        val exception = RuntimeException("Kafka send failed")
-        given(cdcKafkaTemplate.send(anyString(), anyString(), any())).willThrow(exception)
-
+        given(cdcKafkaTemplate.send(anyString(), anyString(), any())).willAnswer {
+            Mono.error<RuntimeException>(RuntimeException("First attempt failed"))
+        }
         walletCDCService
             .sendToKafka(event)
             .test()
