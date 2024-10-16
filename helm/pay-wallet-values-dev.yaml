@@ -82,6 +82,8 @@ microservice-chart:
     WALLET_SERVICE_READ_TIMEOUT: "10000"
     WALLET_SERVICE_CONNECTION_TIMEOUT: "10000"
     WALLET_EXPIRATION_QUEUE_NAME: "pagopa-d-itn-pay-wallet-expiration-queue"
+    AZURE_EVENTHUB_CONNECTION_STRING: "Endpoint=sb://<NamespaceName>.servicebus.windows.net/;SharedAccessKeyName=<KeyName>;SharedAccessKey=<KeyValue>"
+    AZURE_EVENTHUB_TOPIC_NAME: "example-of-topic"
   envSecret:
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     WALLET_STORAGE_QUEUE_KEY: wallet-storage-account-key
