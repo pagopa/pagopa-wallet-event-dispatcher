@@ -21,9 +21,9 @@ class WalletCDCClientConfiguration {
             mapOf(
                 ProducerConfig.BOOTSTRAP_SERVERS_CONFIG to walletCDCConfiguration.bootstrapServers,
                 ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,
-                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to
-                    ErrorHandlingDeserializer::class.java,
-                ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS to JsonSerializer::class.java
+                ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to JsonSerializer::class.java,
+                ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS to
+                    ErrorHandlingDeserializer::class.java
             )
         val producerFactory = DefaultKafkaProducerFactory<String, Any>(configProps)
         return KafkaTemplate(producerFactory)
