@@ -70,7 +70,6 @@ dependencies {
 
   // spring integration
   implementation("org.springframework.boot:spring-boot-starter-integration")
-  implementation("org.springframework.boot:spring-boot-starter-data-mongodb-reactive")
 
   // azure
   implementation("com.azure.spring:spring-cloud-azure-starter-storage-queue")
