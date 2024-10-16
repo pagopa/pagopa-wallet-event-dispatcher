@@ -14,7 +14,7 @@ class WalletCDCService(private val cdcEventHubClient: EventHubProducerClient) {
 
     private val log = LoggerFactory.getLogger(WalletCDCService::class.java.name)
 
-    fun sendBsonToEventHub(event: LoggingEvent): Mono<Unit> {
+    fun sendToEventHub(event: LoggingEvent): Mono<Unit> {
         log.info("Sending cdc event to Event Hub: [{}]", event.id)
 
         return Mono.fromCallable {
