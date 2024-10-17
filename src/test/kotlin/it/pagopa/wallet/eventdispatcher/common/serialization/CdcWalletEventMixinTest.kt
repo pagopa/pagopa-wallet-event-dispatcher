@@ -46,11 +46,37 @@ class CdcWalletEventMixinTest {
                             data =
                             LoggingEvent(
                                 "bcfb7296-c53f-4840-9977-84a597fca1a0",
-                                "2024-06-12T15:50:47.231210Z",
-                                "a21e0037-251d-413b-b121-8899e368df7e"
+                                "2024-06-12T15:50:47.231210Z"
                             )
                         )
-                    ))
+                    ),
+                Arguments.of(
+                    """
+                    {
+                        "data": {
+                            "id": "bcfb7296-c53f-4840-9977-84a597fca1a0",
+                            "serviceId": "PAGOPA",
+                            "oldStatus" : "ENABLED",
+                            "newStatus" : "DISABLED",
+                            "timestamp": "2024-06-12T15:50:47.231210Z",
+                            "_class": "it.pagopa.wallet.audit.ApplicationStatusChangedEvent"
+                        },
+                        "tracingInfo": {
+                            "traceparent": "traceparent",
+                            "tracestate": "tracestate",
+                            "baggage": "baggage"
+                        }
+                    }
+                """,
+                    CdcQueueEvent(
+                        tracingInfo = mockedTracingInfo,
+                        data =
+                        LoggingEvent(
+                            "bcfb7296-c53f-4840-9977-84a597fca1a0",
+                            "2024-06-12T15:50:47.231210Z"
+                        )
+                    )
+                ))
 
         @JvmStatic
         fun roundTripEventMethodSource(): Stream<Arguments> =
@@ -192,7 +218,7 @@ class CdcWalletEventMixinTest {
             )
             .test()
             .consumeNextWith {
-                assertTrue(it.data is LoggingEvent)
+                assertTrue(it.data::class == LoggingEvent::class)
             }
             .verifyComplete()
     }
