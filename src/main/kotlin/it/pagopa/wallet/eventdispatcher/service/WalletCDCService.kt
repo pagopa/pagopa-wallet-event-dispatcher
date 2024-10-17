@@ -33,9 +33,13 @@ class WalletCDCService(
                     }
             }
             .retryWhen(
-                Retry.fixedDelay(3, Duration.ofSeconds(5)).doBeforeRetry {
-                    log.warn("Retrying to send CDC event to Kafka: [{}]", event.id)
-                }
+                Retry.fixedDelay(
+                        retrySendPolicyConfig.maxAttempts,
+                        Duration.ofMillis(retrySendPolicyConfig.intervalInMs)
+                    )
+                    .doBeforeRetry {
+                        log.warn("Retrying to send CDC event to Kafka: [{}]", event.id)
+                    }
             )
             .thenReturn(Unit)
     }
