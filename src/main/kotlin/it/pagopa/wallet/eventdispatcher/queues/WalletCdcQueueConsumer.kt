@@ -6,6 +6,9 @@ import com.azure.core.util.serializer.TypeReference
 import com.azure.spring.messaging.AzureHeaders
 import com.azure.spring.messaging.checkpoint.Checkpointer
 import it.pagopa.wallet.eventdispatcher.common.cdc.LoggingEvent
+import it.pagopa.wallet.eventdispatcher.common.cdc.WalletApplicationsUpdatedEvent
+import it.pagopa.wallet.eventdispatcher.common.cdc.WalletDeletedEvent
+import it.pagopa.wallet.eventdispatcher.common.cdc.WalletOnboardCompletedEvent
 import it.pagopa.wallet.eventdispatcher.common.queue.CdcQueueEvent
 import it.pagopa.wallet.eventdispatcher.configuration.QueueConsumerConfiguration
 import it.pagopa.wallet.eventdispatcher.utils.Tracing
@@ -56,7 +59,24 @@ class WalletCdcQueueConsumer(
 
     private fun handleCdcEvent(event: LoggingEvent): Mono<Unit> {
 
-        return tracing.customizeSpan(Mono.just(logger.info("{}", event))) {
+        return tracing.customizeSpan(
+            if (
+                event is WalletOnboardCompletedEvent ||
+                    event is WalletDeletedEvent ||
+                    event is WalletApplicationsUpdatedEvent
+            ) {
+                Mono.just(
+                    logger.info(
+                        "Process event with id {} of type {} published on {}",
+                        event.id,
+                        event.javaClass,
+                        event.timestamp
+                    )
+                )
+            } else {
+                Mono.just(logger.debug("Not a valid event"))
+            }
+        ) {
             setAttribute(TracingKeys.CDC_EVENT_ID_KEY, event.id)
             setAttribute(TracingKeys.CDC_WALLET_EVENT_TYPE_KEY, event::class.java.simpleName)
         }

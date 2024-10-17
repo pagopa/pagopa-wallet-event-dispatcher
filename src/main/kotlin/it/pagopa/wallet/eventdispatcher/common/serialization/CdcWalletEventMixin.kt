@@ -11,7 +11,12 @@ import it.pagopa.wallet.eventdispatcher.common.serialization.CdcWalletEventMixin
 import it.pagopa.wallet.eventdispatcher.common.serialization.CdcWalletEventMixin.Companion.WALLET_DELETED_TYPE
 import it.pagopa.wallet.eventdispatcher.common.serialization.CdcWalletEventMixin.Companion.WALLET_ONBOARD_COMPLETE_TYPE
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "_class", defaultImpl = LoggingEvent::class)
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    property = "_class",
+    defaultImpl = LoggingEvent::class,
+    visible = true
+)
 @JsonSubTypes(
     JsonSubTypes.Type(value = WalletDeletedEvent::class, name = WALLET_DELETED_TYPE),
     JsonSubTypes.Type(
