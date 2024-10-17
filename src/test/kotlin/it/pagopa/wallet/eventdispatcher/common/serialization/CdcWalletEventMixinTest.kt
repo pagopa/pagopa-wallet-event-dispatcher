@@ -25,11 +25,11 @@ class CdcWalletEventMixinTest {
         @JvmStatic
         fun defaultEventMethodSource(): Stream<Arguments> =
             Stream.of(
-                    Arguments.of(
-                        """
+                Arguments.of(
+                    """
                     {
                         "data": {
-                            "id": "bcfb7296-c53f-4840-9977-84a597fca1a0",
+                            "_id": "bcfb7296-c53f-4840-9977-84a597fca1a0",
                             "timestamp": "2024-06-12T15:50:47.231210Z",
                             "walletId": "a21e0037-251d-413b-b121-8899e368df7e",
                             "_class": "it.pagopa.wallet.audit.WalletAddedEvent"
@@ -41,20 +41,20 @@ class CdcWalletEventMixinTest {
                         }
                     }
                 """,
-                        CdcQueueEvent(
-                            tracingInfo = mockedTracingInfo,
-                            data =
+                    CdcQueueEvent(
+                        tracingInfo = mockedTracingInfo,
+                        data =
                             LoggingEvent(
                                 "bcfb7296-c53f-4840-9977-84a597fca1a0",
                                 "2024-06-12T15:50:47.231210Z"
                             )
-                        )
-                    ),
+                    )
+                ),
                 Arguments.of(
                     """
                     {
                         "data": {
-                            "id": "bcfb7296-c53f-4840-9977-84a597fca1a0",
+                            "_id": "bcfb7296-c53f-4840-9977-84a597fca1a0",
                             "serviceId": "PAGOPA",
                             "oldStatus" : "ENABLED",
                             "newStatus" : "DISABLED",
@@ -71,12 +71,13 @@ class CdcWalletEventMixinTest {
                     CdcQueueEvent(
                         tracingInfo = mockedTracingInfo,
                         data =
-                        LoggingEvent(
-                            "bcfb7296-c53f-4840-9977-84a597fca1a0",
-                            "2024-06-12T15:50:47.231210Z"
-                        )
+                            LoggingEvent(
+                                "bcfb7296-c53f-4840-9977-84a597fca1a0",
+                                "2024-06-12T15:50:47.231210Z"
+                            )
                     )
-                ))
+                )
+            )
 
         @JvmStatic
         fun roundTripEventMethodSource(): Stream<Arguments> =
@@ -85,7 +86,7 @@ class CdcWalletEventMixinTest {
                     """
                     {
                         "data": {
-                            "id": "bcfb7296-c53f-4840-9977-84a597fca1a0",
+                            "_id": "bcfb7296-c53f-4840-9977-84a597fca1a0",
                             "timestamp": "2024-06-12T15:50:47.231210Z",
                             "walletId": "a21e0037-251d-413b-b121-8899e368df7e",
                             "_class": "it.pagopa.wallet.audit.WalletDeletedEvent"
@@ -111,7 +112,7 @@ class CdcWalletEventMixinTest {
                     """
                     {
                         "data":{
-                          "id":"d283cbc5-cc48-4bc4-8f00-ddba4e24fc91",
+                          "_id":"d283cbc5-cc48-4bc4-8f00-ddba4e24fc91",
                           "walletId":"a527e843-9d1c-4531-ae5b-3809cc7abe7a",
                           "auditWallet":{
                              "paymentMethodId":"9d735400-9450-4f7e-9431-8c1e7fa2a339",
@@ -199,9 +200,7 @@ class CdcWalletEventMixinTest {
                 azureJsonSerializer
             )
             .test()
-            .consumeNextWith {
-                assertEquals(expectedDeserializedEvent, it)
-            }
+            .consumeNextWith { assertEquals(expectedDeserializedEvent, it) }
             .verifyComplete()
     }
 
@@ -217,9 +216,7 @@ class CdcWalletEventMixinTest {
                 azureJsonSerializer
             )
             .test()
-            .consumeNextWith {
-                assertTrue(it.data::class == LoggingEvent::class)
-            }
+            .consumeNextWith { assertTrue(it.data::class == LoggingEvent::class) }
             .verifyComplete()
     }
 }

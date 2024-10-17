@@ -39,7 +39,7 @@ class WalletCdcQueueConsumer(
         @Header(AzureHeaders.CHECKPOINTER) checkPointer: Checkpointer
     ): Mono<Unit> {
         return checkPointer
-            .successWithLog()//TODO move to the end?
+            .successWithLog() // TODO move to the end?
             .flatMap {
                 BinaryData.fromBytes(payload).toObjectAsync(EVENT_TYPE_REFERENCE, azureSerializer)
             }

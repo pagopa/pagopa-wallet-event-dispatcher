@@ -1,9 +1,6 @@
 package it.pagopa.wallet.eventdispatcher.common.cdc
 
-open class LoggingEvent(
-    open val id: String,
-    open val timestamp: String
-) {}
+open class LoggingEvent(open val id: String, open val timestamp: String) {}
 
 data class WalletDeletedEvent(
     override val id: String,

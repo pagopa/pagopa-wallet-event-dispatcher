@@ -83,6 +83,7 @@ microservice-chart:
     WALLET_SERVICE_READ_TIMEOUT: "10000"
     WALLET_SERVICE_CONNECTION_TIMEOUT: "10000"
     WALLET_EXPIRATION_QUEUE_NAME: "pagopa-p-itn-pay-wallet-expiration-queue"
+    WALLET_CDC_QUEUE_NAME: "pagopa-p-itn-pay-wallet-cdc-queue"
   envSecret:
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     WALLET_STORAGE_QUEUE_KEY: wallet-storage-account-key

@@ -1,5 +1,6 @@
 package it.pagopa.wallet.eventdispatcher.common.serialization
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import it.pagopa.wallet.eventdispatcher.common.cdc.LoggingEvent
@@ -22,7 +23,8 @@ import it.pagopa.wallet.eventdispatcher.common.serialization.CdcWalletEventMixin
         name = WALLET_APPLICATIONS_UPDATE_TYPE
     )
 )
-class CdcWalletEventMixin {
+interface CdcWalletEventMixin {
+    @JsonProperty("_id") fun getId(): String?
     companion object {
         const val WALLET_APPLICATIONS_UPDATE_TYPE =
             "it.pagopa.wallet.audit.WalletApplicationsUpdatedEvent"
