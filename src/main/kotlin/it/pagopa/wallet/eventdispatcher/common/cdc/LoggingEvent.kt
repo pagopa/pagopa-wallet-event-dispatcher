@@ -6,25 +6,32 @@ open class LoggingEvent(
     open val type: String = LoggingEvent::class.java.simpleName
 ) {}
 
+sealed class WalletLoggingEvent(
+    open val walletId: String,
+    override val id: String,
+    override val timestamp: String,
+    override val type: String = WalletLoggingEvent::class.java.simpleName
+) : LoggingEvent(id, timestamp)
+
 data class WalletDeletedEvent(
     override val id: String,
     override val timestamp: String,
     override val type: String = WalletDeletedEvent::class.java.simpleName,
-    val walletId: String
-) : LoggingEvent(id, timestamp)
+    override val walletId: String
+) : WalletLoggingEvent(walletId, id, timestamp)
 
 data class WalletApplicationsUpdatedEvent(
     override val id: String,
     override val timestamp: String,
     override val type: String = WalletApplicationsUpdatedEvent::class.java.simpleName,
-    val walletId: String,
+    override val walletId: String,
     val updatedApplications: List<AuditWalletApplication>
-) : LoggingEvent(id, timestamp)
+) : WalletLoggingEvent(walletId, id, timestamp)
 
 data class WalletOnboardCompletedEvent(
     override val id: String,
     override val timestamp: String,
     override val type: String = WalletOnboardCompletedEvent::class.java.simpleName,
-    val walletId: String,
+    override val walletId: String,
     val auditWallet: AuditWallet
-) : LoggingEvent(id, timestamp)
+) : WalletLoggingEvent(walletId, id, timestamp)
