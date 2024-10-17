@@ -122,8 +122,7 @@ class WalletCdcQueueConsumerTest {
         verifySpanAttributes(
             span,
             TracingKeys.CDC_EVENT_ID_KEY to eventId.toString(),
-            TracingKeys.CDC_WALLET_EVENT_TYPE_KEY to
-                LoggingEvent::class.java.simpleName
+            TracingKeys.CDC_WALLET_EVENT_TYPE_KEY to LoggingEvent::class.java.simpleName
         )
     }
 
