@@ -69,7 +69,7 @@ class WalletCdcQueueConsumer(
                     logger.info(
                         "Process event with id {} of type {} published on {}",
                         event.id,
-                        event.javaClass,
+                        event.type,
                         event.timestamp
                     )
                 )

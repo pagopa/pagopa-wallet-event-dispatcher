@@ -41,30 +41,31 @@ class WalletCdcQueueConsumerTest {
                 tracingInfo = TracingInfo(),
                 data =
                     WalletOnboardCompletedEvent(
-                        eventId.toString(),
-                        creationDate,
-                        walletId.toString(),
-                        AuditWallet(
-                            paymentMethodId = "9d735400-9450-4f7e-9431-8c1e7fa2a339",
-                            creationDate = creationDate,
-                            updateDate = creationDate,
-                            applications =
-                                listOf(
-                                    AuditWalletApplication(
-                                        "PAGOPA",
-                                        "ENABLED",
-                                        "2024-10-16T15:03:18.378746985Z",
-                                        "2024-10-16T15:03:18.378747385Z",
-                                        emptyMap()
-                                    )
-                                ),
-                            details = AuditWalletDetails("PAYPAL", null, "BCITITMM"),
-                            status = "VALIDATED",
-                            validationOperationId = "618534471407042909",
-                            validationOperationResult = "EXECUTED",
-                            validationOperationTimestamp = "2024-10-16T15:03:35.841Z",
-                            validationErrorCode = null
-                        )
+                        id = eventId.toString(),
+                        timestamp = creationDate,
+                        walletId = walletId.toString(),
+                        auditWallet =
+                            AuditWallet(
+                                paymentMethodId = "9d735400-9450-4f7e-9431-8c1e7fa2a339",
+                                creationDate = creationDate,
+                                updateDate = creationDate,
+                                applications =
+                                    listOf(
+                                        AuditWalletApplication(
+                                            "PAGOPA",
+                                            "ENABLED",
+                                            "2024-10-16T15:03:18.378746985Z",
+                                            "2024-10-16T15:03:18.378747385Z",
+                                            emptyMap()
+                                        )
+                                    ),
+                                details = AuditWalletDetails("PAYPAL", null, "BCITITMM"),
+                                status = "VALIDATED",
+                                validationOperationId = "618534471407042909",
+                                validationOperationResult = "EXECUTED",
+                                validationOperationTimestamp = "2024-10-16T15:03:35.841Z",
+                                validationErrorCode = null
+                            )
                     )
             )
         given(checkPointer.success()).willReturn(Mono.empty())
@@ -94,7 +95,6 @@ class WalletCdcQueueConsumerTest {
 
     @Test
     fun `Should ignore default logging event successfully`() {
-        val walletId = UUID.randomUUID()
         val eventId = UUID.randomUUID()
         val creationDate = "2024-06-14T15:04:56.908428Z"
         val loggingEvent =

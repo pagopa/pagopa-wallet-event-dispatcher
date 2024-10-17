@@ -102,9 +102,9 @@ class CdcWalletEventMixinTest {
                         tracingInfo = mockedTracingInfo,
                         data =
                             WalletDeletedEvent(
-                                "bcfb7296-c53f-4840-9977-84a597fca1a0",
-                                "2024-06-12T15:50:47.231210Z",
-                                "a21e0037-251d-413b-b121-8899e368df7e"
+                                id = "bcfb7296-c53f-4840-9977-84a597fca1a0",
+                                timestamp = "2024-06-12T15:50:47.231210Z",
+                                walletId = "a21e0037-251d-413b-b121-8899e368df7e"
                             )
                     )
                 ),
@@ -151,30 +151,31 @@ class CdcWalletEventMixinTest {
                         tracingInfo = TracingInfo(),
                         data =
                             WalletOnboardCompletedEvent(
-                                "d283cbc5-cc48-4bc4-8f00-ddba4e24fc91",
-                                "2024-10-16T15:03:36.527818530Z",
-                                "a527e843-9d1c-4531-ae5b-3809cc7abe7a",
-                                AuditWallet(
-                                    paymentMethodId = "9d735400-9450-4f7e-9431-8c1e7fa2a339",
-                                    creationDate = "2024-10-16T15:03:18.541220633Z",
-                                    updateDate = "2024-10-16T15:03:36.447051359Z",
-                                    applications =
-                                        listOf(
-                                            AuditWalletApplication(
-                                                "PAGOPA",
-                                                "ENABLED",
-                                                "2024-10-16T15:03:18.378746985Z",
-                                                "2024-10-16T15:03:18.378747385Z",
-                                                emptyMap()
-                                            )
-                                        ),
-                                    details = AuditWalletDetails("PAYPAL", null, "BCITITMM"),
-                                    status = "VALIDATED",
-                                    validationOperationId = "618534471407042909",
-                                    validationOperationResult = "EXECUTED",
-                                    validationOperationTimestamp = "2024-10-16T15:03:35.841Z",
-                                    validationErrorCode = null
-                                )
+                                id = "d283cbc5-cc48-4bc4-8f00-ddba4e24fc91",
+                                timestamp = "2024-10-16T15:03:36.527818530Z",
+                                walletId = "a527e843-9d1c-4531-ae5b-3809cc7abe7a",
+                                auditWallet =
+                                    AuditWallet(
+                                        paymentMethodId = "9d735400-9450-4f7e-9431-8c1e7fa2a339",
+                                        creationDate = "2024-10-16T15:03:18.541220633Z",
+                                        updateDate = "2024-10-16T15:03:36.447051359Z",
+                                        applications =
+                                            listOf(
+                                                AuditWalletApplication(
+                                                    "PAGOPA",
+                                                    "ENABLED",
+                                                    "2024-10-16T15:03:18.378746985Z",
+                                                    "2024-10-16T15:03:18.378747385Z",
+                                                    emptyMap()
+                                                )
+                                            ),
+                                        details = AuditWalletDetails("PAYPAL", null, "BCITITMM"),
+                                        status = "VALIDATED",
+                                        validationOperationId = "618534471407042909",
+                                        validationOperationResult = "EXECUTED",
+                                        validationOperationTimestamp = "2024-10-16T15:03:35.841Z",
+                                        validationErrorCode = null
+                                    )
                             )
                     )
                 )
