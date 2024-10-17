@@ -120,7 +120,7 @@ class CdcWalletEventMixinTest {
                              "updateDate":"2024-10-16T15:03:36.447051359Z",
                              "applications":[
                                 {
-                                   "id":"PAGOPA",
+                                   "_id":"PAGOPA",
                                    "status":"ENABLED",
                                    "creationDate":"2024-10-16T15:03:18.378746985Z",
                                    "updateDate":"2024-10-16T15:03:18.378747385Z",
@@ -177,6 +177,79 @@ class CdcWalletEventMixinTest {
                                         validationErrorCode = null
                                     )
                             )
+                    ),
+                    Arguments.of(
+                        """
+                    {
+                        "data":{
+                          "_id":"d283cbc5-cc48-4bc4-8f00-ddba4e24fc91",
+                          "walletId":"a527e843-9d1c-4531-ae5b-3809cc7abe7a",
+                          "auditWallet":{
+                             "paymentMethodId":"9d735400-9450-4f7e-9431-8c1e7fa2a339",
+                             "creationDate":"2024-10-16T15:03:18.541220633Z",
+                             "updateDate":"2024-10-16T15:03:36.447051359Z",
+                             "applications":[
+                                {
+                                   "_id":"PAGOPA",
+                                   "status":"ENABLED",
+                                   "creationDate":"2024-10-16T15:03:18.378746985Z",
+                                   "updateDate":"2024-10-16T15:03:18.378747385Z",
+                                   "metadata":{
+                                      
+                                   }
+                                }
+                             ],
+                             "details":{
+                                "type":"CARDS",
+                                "cardBrand":"VISA"
+                             },
+                             "status":"VALIDATED",
+                             "validationOperationId":"618534471407042909",
+                             "validationOperationResult":"EXECUTED",
+                             "validationOperationTimestamp":"2024-10-16T15:03:35.841Z"
+                          },
+                          "timestamp":"2024-10-16T15:03:36.527818530Z",
+                          "_class":"it.pagopa.wallet.audit.WalletOnboardCompletedEvent"
+                       },
+                       "tracingInfo":{
+                          
+                       }
+                    }
+
+                """,
+                        CdcQueueEvent(
+                            tracingInfo = TracingInfo(),
+                            data =
+                                WalletOnboardCompletedEvent(
+                                    id = "d283cbc5-cc48-4bc4-8f00-ddba4e24fc91",
+                                    timestamp = "2024-10-16T15:03:36.527818530Z",
+                                    walletId = "a527e843-9d1c-4531-ae5b-3809cc7abe7a",
+                                    auditWallet =
+                                        AuditWallet(
+                                            paymentMethodId =
+                                                "9d735400-9450-4f7e-9431-8c1e7fa2a339",
+                                            creationDate = "2024-10-16T15:03:18.541220633Z",
+                                            updateDate = "2024-10-16T15:03:36.447051359Z",
+                                            applications =
+                                                listOf(
+                                                    AuditWalletApplication(
+                                                        "PAGOPA",
+                                                        "ENABLED",
+                                                        "2024-10-16T15:03:18.378746985Z",
+                                                        "2024-10-16T15:03:18.378747385Z",
+                                                        emptyMap()
+                                                    )
+                                                ),
+                                            details = AuditWalletDetails("CARDS", "VISA", null),
+                                            status = "VALIDATED",
+                                            validationOperationId = "618534471407042909",
+                                            validationOperationResult = "EXECUTED",
+                                            validationOperationTimestamp =
+                                                "2024-10-16T15:03:35.841Z",
+                                            validationErrorCode = null
+                                        )
+                                )
+                        )
                     )
                 )
             )
