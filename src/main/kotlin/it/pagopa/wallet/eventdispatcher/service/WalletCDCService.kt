@@ -19,7 +19,11 @@ class WalletCDCService(
     private val log = LoggerFactory.getLogger(WalletCDCService::class.java.name)
 
     fun sendToKafka(event: WalletLoggingEvent): Mono<Unit> {
-        log.info("Sending CDC event to Kafka: [{}]", event.id)
+        log.info(
+            "Sending CDC event to Kafka. walletId: [{}], eventId: [{}]",
+            event.walletId,
+            event.id
+        )
 
         return Mono.defer {
                 cdcKafkaTemplate
