@@ -19,10 +19,13 @@ class WalletCDCService(
     private val log = LoggerFactory.getLogger(WalletCDCService::class.java.name)
 
     fun sendToKafka(event: WalletLoggingEvent): Mono<Unit> {
+
         log.info(
-            "Sending CDC event to Kafka. walletId: [{}], eventId: [{}]",
+            "Process event with id [{}] of type [{}] with walletId [{}] published on [{}]",
+            event.id,
+            event.type,
             event.walletId,
-            event.id
+            event.timestamp
         )
 
         return Mono.defer {
@@ -30,16 +33,20 @@ class WalletCDCService(
                     .send(cdcTopicName, event.walletId, event)
                     .doOnSuccess {
                         log.info(
-                            "Successfully sent CDC event to Kafka. walletId: [{}], eventId: [{}]",
+                            "Succesfully sent event with id [{}] of type [{}] with walletId [{}] published on [{}]",
+                            event.id,
+                            event.type,
                             event.walletId,
-                            event.id
+                            event.timestamp
                         )
                     }
                     .doOnError {
                         log.error(
-                            "Failed to send CDC event to Kafka. walletId: [{}], eventId: [{}]",
+                            "Error while processing event with id [{}] of type [{}] with walletId [{}] published on [{}]",
+                            event.id,
+                            event.type,
                             event.walletId,
-                            event.id
+                            event.timestamp
                         )
                     }
             }
@@ -50,9 +57,11 @@ class WalletCDCService(
                     )
                     .doBeforeRetry {
                         log.warn(
-                            "Retrying to send CDC event to Kafka. walletId: [{}], eventId: [{}]",
+                            "Retry send event with id [{}] of type [{}] with walletId [{}] published on [{}]",
+                            event.id,
+                            event.type,
                             event.walletId,
-                            event.id
+                            event.timestamp
                         )
                     }
             )
