@@ -82,6 +82,10 @@ microservice-chart:
     WALLET_SERVICE_READ_TIMEOUT: "10000"
     WALLET_SERVICE_CONNECTION_TIMEOUT: "10000"
     WALLET_EXPIRATION_QUEUE_NAME: "pagopa-d-itn-pay-wallet-expiration-queue"
+    AZURE_EVENTHUB_CONNECTION_STRING: "kafka:29092"
+    AZURE_EVENTHUB_TOPIC_NAME: "payment-wallet-injection-topic"
+    CDC_SEND_RETRY_MAX_ATTEMPTS: "1"
+    CDC_SEND_RETRY_INTERVAL_IN_MS: "1000"
   envSecret:
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     WALLET_STORAGE_QUEUE_KEY: wallet-storage-account-key

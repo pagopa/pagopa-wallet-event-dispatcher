@@ -1,6 +1,9 @@
 package it.pagopa.wallet.eventdispatcher
 
+import it.pagopa.wallet.eventdispatcher.configuration.properties.RetrySendPolicyConfig
+import it.pagopa.wallet.eventdispatcher.configuration.properties.WalletCDCConfiguration
 import it.pagopa.wallet.eventdispatcher.configuration.properties.WalletsApiConfiguration
+import java.util.*
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
@@ -9,7 +12,11 @@ import reactor.core.publisher.Hooks
 
 @SpringBootApplication
 @EnableIntegration
-@EnableConfigurationProperties(WalletsApiConfiguration::class)
+@EnableConfigurationProperties(
+    WalletsApiConfiguration::class,
+    WalletCDCConfiguration::class,
+    RetrySendPolicyConfig::class
+)
 class WalletEventDispatcherApplication
 
 fun main(args: Array<String>) {
