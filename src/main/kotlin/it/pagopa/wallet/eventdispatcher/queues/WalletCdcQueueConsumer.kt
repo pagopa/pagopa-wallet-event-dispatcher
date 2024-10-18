@@ -64,9 +64,10 @@ class WalletCdcQueueConsumer(
                 Mono.defer { walletCDCService.sendToKafka(event) }
                     .onErrorResume {
                         logger.error(
-                            "Error when processing event with id [{}] of type [{}] published on [{}]",
+                            "Error while processing event with id [{}] of type [{}] with walletId [{}] published on [{}]",
                             event.id,
                             event.type,
+                            event.walletId,
                             event.timestamp
                         )
                         Mono.empty()
