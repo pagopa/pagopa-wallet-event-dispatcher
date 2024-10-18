@@ -86,6 +86,7 @@ microservice-chart:
     AZURE_EVENTHUB_TOPIC_NAME: "payment-wallet-injection-topic"
     CDC_SEND_RETRY_MAX_ATTEMPTS: "1"
     CDC_SEND_RETRY_INTERVAL_IN_MS: "1000"
+    WALLET_CDC_QUEUE_NAME: "pagopa-u-itn-pay-wallet-cdc-queue"
   envSecret:
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     WALLET_STORAGE_QUEUE_KEY: wallet-storage-account-key
