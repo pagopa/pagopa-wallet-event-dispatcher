@@ -10,6 +10,7 @@ services:
       - ./.env
     depends_on:
       - init-kafka
+      - azurite-init
     ports:
       - "8080:8080"
     networks:
