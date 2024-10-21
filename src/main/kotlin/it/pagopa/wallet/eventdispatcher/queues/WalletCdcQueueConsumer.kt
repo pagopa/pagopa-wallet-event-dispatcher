@@ -61,17 +61,16 @@ class WalletCdcQueueConsumer(
 
         return tracing.customizeSpan(
             if (event is WalletLoggingEvent) {
-                Mono.defer { walletCDCService.sendToKafka(event) }
-                    .onErrorResume {
-                        logger.error(
-                            "Error while processing event with id [{}] of type [{}] with walletId [{}] published on [{}]",
-                            event.id,
-                            event.type,
-                            event.walletId,
-                            event.timestamp
-                        )
-                        Mono.empty()
-                    }
+                walletCDCService.sendToKafka(event).onErrorResume {
+                    logger.error(
+                        "Error while processing event with id [{}] of type [{}] with walletId [{}] published on [{}]",
+                        event.id,
+                        event.type,
+                        event.walletId,
+                        event.timestamp
+                    )
+                    Mono.empty()
+                }
             } else {
                 Mono.just(logger.debug("Not a valid event"))
             }

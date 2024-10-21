@@ -74,6 +74,7 @@ class WalletCdcQueueConsumerTest {
                             )
                     )
             )
+        given(walletCDCService.sendToKafka(any())).willReturn(Mono.just(Unit))
         given(checkPointer.success()).willReturn(Mono.empty())
         StepVerifier.create(
                 walletCdcQueueConsumer.messageReceiver(
