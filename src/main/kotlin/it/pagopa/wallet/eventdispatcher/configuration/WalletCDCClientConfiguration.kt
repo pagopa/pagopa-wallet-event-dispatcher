@@ -29,6 +29,7 @@ class WalletCDCClientConfiguration {
                 "sasl.mechanism" to "PLAIN",
                 "security.protocol" to "SASL_SSL"
             )
+
         val senderOptions = SenderOptions.create<String, Any>(configProps)
         return ReactiveKafkaProducerTemplate(senderOptions)
     }
