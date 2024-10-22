@@ -33,11 +33,12 @@ class WalletCDCService(
                     }
                     .doOnError {
                         log.error(
-                            "Error while processing event with id [{}] of type [{}] with walletId [{}] published on [{}]",
+                            "Error while processing event with id [{}] of type [{}] with walletId [{}] published on [{}]. Error is {}",
                             event.id,
                             event.type,
                             event.walletId,
-                            event.timestamp
+                            event.timestamp,
+                            it.message
                         )
                     }
             }
