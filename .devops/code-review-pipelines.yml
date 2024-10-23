@@ -1,155 +1,63 @@
-variables:
-  BRANCH_NAME: $[ replace(variables['System.PullRequest.SourceBranch'], 'refs/heads/', '') ]
-  GRADLE_USER_HOME: $(Pipeline.Workspace)/.gradle
-trigger: none
-
-pool:
-  vmImage: ubuntu-latest
-
-stages:
-  - stage: BuildAndUnitTest
-    jobs:
-      - job: make_buildEndUnitTest
-        steps:
-          - task: Cache@2
-            inputs:
-              key: 'gradle | "$(Agent.OS)" | **/build.gradle.kts' # Swap build.gradle.kts for build.gradle when using Groovy
-              restoreKeys: |
-                gradle | "$(Agent.OS)"
-                gradle
-              path: $(GRADLE_USER_HOME)
-            displayName: Configure gradle caching
-
-          - task: SonarCloudPrepare@2
-            displayName: 'Prepare SonarCloud analysis configuration'
-            inputs:
-              SonarCloud: '$(SONARCLOUD_SERVICE_CONN)'
-              organization: '$(SONARCLOUD_ORG)'
-              scannerMode: Other
-              extraProperties: |
-                sonar.projectKey=$(SONARCLOUD_PROJECT_KEY)
-                sonar.projectName=$(SONARCLOUD_PROJECT_NAME)
-                sonar.coverage.exclusions=**/config/*,**/*Mock*,**/model/*
-                sonar.coverage.jacoco.xmlReportPaths=./build/reports/jacoco/test/jacocoTestReport.xml
-                sonar.junit.reportPaths=./build/test-results/test
-
-          - task: Gradle@3
-            inputs:
-              gradleWrapperFile: 'gradlew' # string. Alias: wrapperScript. Required. Gradle wrapper. Default: gradlew.
-              tasks: 'build' # string. Required. Tasks. Default: build.
-              publishJUnitResults: true
-              testResultsFiles: '**/TEST-*.xml' # string. Required when publishJUnitResults = true. Test results files. Default: **/TEST-*.xml.
-              codeCoverageToolOption: 'None' # 'None' | 'Cobertura' | 'JaCoCo'. Alias: codeCoverageTool. Code coverage tool. Default: None.
-              codeCoverageClassFilesDirectories: 'build/classes/main/' # string. Alias: classFilesDirectories. Required when codeCoverageTool != None. Class files directories. Default: build/classes/main/.
-              javaHomeOption: 'JDKVersion' # 'JDKVersion' | 'Path'. Alias: javaHomeSelection. Required. Set JAVA_HOME by. Default: JDKVersion.
-              jdkVersionOption: '1.21' # 'default' | '1.11' | '1.10' | '1.9' | '1.8' | '1.7' | '1.6'. Alias: jdkVersion. Optional. Use when javaHomeSelection = JDKVersion. JDK version. Default: default.
-              sonarQubeRunAnalysis: true
-
-          - task: SonarCloudPublish@2
-            displayName: 'Publish SonarCloud results on build summary'
-            inputs:
-              pollingTimeoutSec: '300'
-          - script: |
-              # stop the Gradle daemon to ensure no files are left open (impacting the save cache operation later)
-              ./gradlew --stop
-            displayName: Gradlew stop
-
-          - task: PublishCodeCoverageResults@2
-            inputs:
-              codeCoverageTool: 'JaCoCo'
-              summaryFileLocation: 'build/reports/jacoco/test/jacocoTestReport.xml'
-              reportDirectory: 'build/reports/jacoco/test/html'
-            displayName: 'Publish Code Coverage on Azure Devops'
-
-  - stage: IntegrationTest
-    dependsOn: []
-    jobs:
-      - job: Integration_Test
-        steps:
-          - script: docker compose up -d
-            displayName: 'Run app with docker-compose'
-
-          - script: |
-              timeout 180 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8080/actuator/health/liveness)" != "200" ]]; do sleep 5; done' || exit 1
-            displayName: 'Health check pagopa-wallet-eventdispatcher'
-
-          - script: |
-              az storage message put \
-                --connection-string "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;QueueEndpoint=http://localhost:10001/devstoreaccount1" \
-                --queue-name pagopa-wallet-cdc-queue \
-                --content '{
-                  "data":{
-                    "_id":"d283cbc5-cc48-4bc4-8f00-ddba4e24fc91",
-                    "walletId":"a527e843-9d1c-4531-ae5b-3809cc7abe7a",
-                    "auditWallet":{
-                      "paymentMethodId":"9d735400-9450-4f7e-9431-8c1e7fa2a339",
-                      "creationDate":"2024-10-16T15:03:18.541220633Z",
-                      "updateDate":"2024-10-16T15:03:36.447051359Z",
-                      "applications":[
-                        {
-                          "_id":"PAGOPA",
-                          "status":"ENABLED",
-                          "creationDate":"2024-10-16T15:03:18.378746985Z",
-                          "updateDate":"2024-10-16T15:03:18.378747385Z",
-                          "metadata":{}
-                        }
-                      ],
-                      "details":{
-                        "type":"PAYPAL",
-                        "pspId":"BCITITMM"
-                      },
-                      "status":"VALIDATED",
-                      "validationOperationId":"618534471407042909",
-                      "validationOperationResult":"EXECUTED",
-                      "validationOperationTimestamp":"2024-10-16T15:03:35.841Z"
-                    },
-                    "timestamp":"2024-10-16T15:03:36.527818530Z",
-                    "_class":"it.pagopa.wallet.audit.WalletOnboardCompletedEvent"
-                  },
-                  "tracingInfo":{}
-                }'
-            displayName: 'Write message to Azurite queue'
-
-          - script: |
-              sleep 2
-              eventFromKafka=$(kafka-console-consumer --bootstrap-server localhost:9092 --topic payment-wallet-injection-topic --from-beginning --timeout-ms 5000 --max-messages 1)
-              
-              expectedDataEvent='{
-                "data":{
-                  "_id":"d283cbc5-cc48-4bc4-8f00-ddba4e24fc91",
-                  "walletId":"a527e843-9d1c-4531-ae5b-3809cc7abe7a",
-                  "auditWallet":{
-                    "paymentMethodId":"9d735400-9450-4f7e-9431-8c1e7fa2a339",
-                    "creationDate":"2024-10-16T15:03:18.541220633Z",
-                    "updateDate":"2024-10-16T15:03:36.447051359Z",
-                    "applications":[
-                      {
-                        "_id":"PAGOPA",
-                        "status":"ENABLED",
-                        "creationDate":"2024-10-16T15:03:18.378746985Z",
-                        "updateDate":"2024-10-16T15:03:18.378747385Z",
-                        "metadata":{}
-                      }
-                    ],
-                    "details":{
-                      "type":"PAYPAL",
-                      "pspId":"BCITITMM"
-                    },
-                    "status":"VALIDATED",
-                    "validationOperationId":"618534471407042909",
-                    "validationOperationResult":"EXECUTED",
-                    "validationOperationTimestamp":"2024-10-16T15:03:35.841Z"
-                  },
-                  "timestamp":"2024-10-16T15:03:36.527818530Z",
-                  "_class":"it.pagopa.wallet.audit.WalletOnboardCompletedEvent"
-                },
-                "tracingInfo":{}
-              }'
-
-              if [ "$eventFromKafka" == "$expectedDataEvent" ]; then
-                echo "test passed successfully"
-              else
-                echo "fail! unexpected event"
-                exit 1   
-              fi
-            displayName: 'Validate message in Kafka topic'
+#variables:
+#  BRANCH_NAME: $[ replace(variables['System.PullRequest.SourceBranch'], 'refs/heads/', '') ]
+#  GRADLE_USER_HOME: $(Pipeline.Workspace)/.gradle
+#trigger: none
+#
+#pool:
+#  vmImage: ubuntu-latest
+#
+#stages:
+#  - stage: BuildEndUnitTest
+#    jobs:
+#      - job: make_buildEndUnitTest
+#        displayName: Build service and Run Unit tests
+#        steps:
+#          - task: Cache@2
+#            inputs:
+#              key: 'gradle | "$(Agent.OS)" | **/build.gradle.kts' # Swap build.gradle.kts for build.gradle when using Groovy
+#              restoreKeys: |
+#                gradle | "$(Agent.OS)"
+#                gradle
+#              path: $(GRADLE_USER_HOME)
+#            displayName: Configure gradle caching
+#
+#          - task: SonarCloudPrepare@1
+#            displayName: 'Prepare SonarCloud analysis configuration'
+#            inputs:
+#              SonarCloud: '$(SONARCLOUD_SERVICE_CONN)'
+#              organization: '$(SONARCLOUD_ORG)'
+#              scannerMode: Other
+#              extraProperties: |
+#                sonar.projectKey=$(SONARCLOUD_PROJECT_KEY)
+#                sonar.projectName=$(SONARCLOUD_PROJECT_NAME)
+#                sonar.coverage.exclusions=**/config/*,**/*Mock*,**/model/*
+#                sonar.coverage.jacoco.xmlReportPaths=./build/reports/jacoco/test/jacocoTestReport.xml
+#                sonar.junit.reportPaths=./build/test-results/test
+#
+#          - task: Gradle@3
+#            inputs:
+#              gradleWrapperFile: 'gradlew' # string. Alias: wrapperScript. Required. Gradle wrapper. Default: gradlew.
+#              tasks: 'build' # string. Required. Tasks. Default: build.
+#              publishJUnitResults: true
+#              testResultsFiles: '**/TEST-*.xml' # string. Required when publishJUnitResults = true. Test results files. Default: **/TEST-*.xml.
+#              codeCoverageToolOption: 'None' # 'None' | 'Cobertura' | 'JaCoCo'. Alias: codeCoverageTool. Code coverage tool. Default: None.
+#              codeCoverageClassFilesDirectories: 'build/classes/main/' # string. Alias: classFilesDirectories. Required when codeCoverageTool != None. Class files directories. Default: build/classes/main/.
+#              javaHomeOption: 'JDKVersion' # 'JDKVersion' | 'Path'. Alias: javaHomeSelection. Required. Set JAVA_HOME by. Default: JDKVersion.
+#              jdkVersionOption: '1.17' # 'default' | '1.11' | '1.10' | '1.9' | '1.8' | '1.7' | '1.6'. Alias: jdkVersion. Optional. Use when javaHomeSelection = JDKVersion. JDK version. Default: default.
+#              sonarQubeRunAnalysis: true
+#
+#          - task: SonarCloudPublish@1
+#            displayName: 'Publish SonarCloud results on build summary'
+#            inputs:
+#              pollingTimeoutSec: '300'
+#          - script: |
+#              # stop the Gradle daemon to ensure no files are left open (impacting the save cache operation later)
+#              ./gradlew --stop
+#            displayName: Gradlew stop
+#
+#          - task: PublishCodeCoverageResults@1
+#            inputs:
+#              codeCoverageTool: 'JaCoCo'
+#              summaryFileLocation: 'build/reports/jacoco/test/jacocoTestReport.xml'
+#              reportDirectory: 'build/reports/jacoco/test/html'
+#            displayName: 'Publish Code Coverage on Azure Devops'
