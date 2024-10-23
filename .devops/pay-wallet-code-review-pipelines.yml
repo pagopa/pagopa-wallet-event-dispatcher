@@ -149,6 +149,7 @@ stages:
                 "tracingInfo":{}
               }'
 
+              echo "event found: $eventFromKafka"
               if [ "$eventFromKafka" == "$expectedDataEvent" ]; then
                 echo "test passed successfully"
               else
