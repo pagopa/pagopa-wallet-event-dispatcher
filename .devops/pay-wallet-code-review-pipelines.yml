@@ -67,10 +67,6 @@ stages:
     jobs:
       - job: Integration_Test
         steps:
-          - script: |
-              wget https://archive.apache.org/dist/kafka/2.8.0/kafka_2.13-2.8.0.tgz
-              tar -xzf kafka_2.13-2.8.0.tgz
-              export PATH=$PATH:$PWD/kafka_2.13-2.8.0/bin
             displayName: 'Install Kafka'
           - script: cp env.example .env
             displayName: 'Set env'
@@ -80,7 +76,12 @@ stages:
           - script: |
               timeout 180 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8080/actuator/health/liveness)" != "200" ]]; do sleep 5; done' || exit 1
             displayName: 'Health check pagopa-wallet-eventdispatcher'
-
+          - script: |
+              wget https://archive.apache.org/dist/kafka/2.8.0/kafka_2.13-2.8.0.tgz
+              tar -xzf kafka_2.13-2.8.0.tgz
+              export PATH=$PATH:$PWD/kafka_2.13-2.8.0/bin
+              # Verify Kafka installation
+              kafka-topics --version
           - script: |
               az storage message put \
                 --connection-string "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;QueueEndpoint=http://localhost:10001/devstoreaccount1" \
