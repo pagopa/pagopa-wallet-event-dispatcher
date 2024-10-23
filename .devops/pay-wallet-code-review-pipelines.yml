@@ -119,8 +119,20 @@ stages:
               # Verify Kafka installation
               kafka-topics.sh --version
               sleep 2
+              eventFromKafka=$(kafka-console-consumer.sh --bootstrap-server kafka:29092 --topic payment-wallet-injection-topic --from-beginning --timeout-ms 5000 --max-messages 1)
+              echo "A event found: $eventFromKafka"
+
               eventFromKafka=$(kafka-console-consumer.sh --bootstrap-server localhost:29092 --topic payment-wallet-injection-topic --from-beginning --timeout-ms 5000 --max-messages 1)
+              echo "B event found: $eventFromKafka"
               
+              eventFromKafka=$(kafka-console-consumer.sh --bootstrap-server kafka:9092 --topic payment-wallet-injection-topic --from-beginning --timeout-ms 5000 --max-messages 1)
+              echo "C event found: $eventFromKafka"
+
+              eventFromKafka=$(kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic payment-wallet-injection-topic --from-beginning --timeout-ms 5000 --max-messages 1)
+              echo "D event found: $eventFromKafka"
+
+  
+
               expectedDataEvent='{
                 "data":{
                   "_id":"d283cbc5-cc48-4bc4-8f00-ddba4e24fc91",

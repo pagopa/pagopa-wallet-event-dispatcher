@@ -54,6 +54,8 @@ services:
     image: confluentinc/cp-kafka:6.1.1
     depends_on:
       - zookeeper
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - '9092:9092'
     expose:
