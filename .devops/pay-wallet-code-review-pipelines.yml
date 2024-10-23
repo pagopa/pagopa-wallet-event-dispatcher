@@ -80,7 +80,7 @@ stages:
               tar -xzf kafka_2.13-2.8.0.tgz
               export PATH=$PATH:$PWD/kafka_2.13-2.8.0/bin
               # Verify Kafka installation
-              kafka-topics --version
+              kafka-topics.sh --version
             displayName: 'Install Kafka'
           - script: |
               az storage message put \
@@ -121,7 +121,7 @@ stages:
 
           - script: |
               sleep 2
-              eventFromKafka=$(kafka-console-consumer --bootstrap-server localhost:9092 --topic payment-wallet-injection-topic --from-beginning --timeout-ms 5000 --max-messages 1)
+              eventFromKafka=$(kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic payment-wallet-injection-topic --from-beginning --timeout-ms 5000 --max-messages 1)
               
               expectedDataEvent='{
                 "data":{
