@@ -67,6 +67,11 @@ stages:
     jobs:
       - job: Integration_Test
         steps:
+          - script: |
+              wget https://archive.apache.org/dist/kafka/2.8.0/kafka_2.13-2.8.0.tgz
+              tar -xzf kafka_2.13-2.8.0.tgz
+              export PATH=$PATH:$PWD/kafka_2.13-2.8.0/bin
+            displayName: 'Install Kafka'
           - script: cp env.example .env
             displayName: 'Set env'
           - script: docker compose up -d
