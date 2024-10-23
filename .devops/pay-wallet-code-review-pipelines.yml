@@ -119,6 +119,9 @@ stages:
               # Verify Kafka installation
               kafka-topics.sh --version
               sleep 2
+              
+              message_count=$(kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list localhost:9092 --topic payment-wallet-injection-topic --time -1 --offsets 1 | awk -F ':' '{sum += $3} END {print sum}')
+              echo "Number of messages in the topic: $message_count"
 
               eventFromKafka=$(kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic payment-wallet-injection-topic --from-beginning --timeout-ms 5000 --max-messages 1)
 
