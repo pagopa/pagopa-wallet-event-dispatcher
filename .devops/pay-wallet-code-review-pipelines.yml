@@ -119,7 +119,7 @@ stages:
               # Verify Kafka installation
               kafka-topics.sh --version
               sleep 2
-              eventFromKafka=$(kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic payment-wallet-injection-topic --from-beginning --timeout-ms 5000 --max-messages 1)
+              eventFromKafka=$(kafka-console-consumer.sh --bootstrap-server localhost:29092 --topic payment-wallet-injection-topic --from-beginning --timeout-ms 5000 --max-messages 1)
               
               expectedDataEvent='{
                 "data":{
