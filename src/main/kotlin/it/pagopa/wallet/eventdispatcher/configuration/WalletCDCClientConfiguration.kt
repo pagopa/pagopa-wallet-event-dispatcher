@@ -23,8 +23,13 @@ class WalletCDCClientConfiguration {
                 ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java,
                 ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to JsonSerializer::class.java,
                 ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS to
-                    ErrorHandlingDeserializer::class.java
+                    ErrorHandlingDeserializer::class.java,
+                "sasl.jaas.config" to
+                    "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"\$ConnectionString\" password=\"${walletCDCConfiguration.connectionString}\";",
+                "sasl.mechanism" to "PLAIN",
+                "security.protocol" to "SASL_SSL"
             )
+
         val senderOptions = SenderOptions.create<String, Any>(configProps)
         return ReactiveKafkaProducerTemplate(senderOptions)
     }
