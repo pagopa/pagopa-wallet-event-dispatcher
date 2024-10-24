@@ -7,13 +7,14 @@ import org.apache.kafka.common.config.SaslConfigs
 import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.env.Environment
 import org.springframework.kafka.core.reactive.ReactiveKafkaProducerTemplate
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
 import org.springframework.kafka.support.serializer.JsonSerializer
 import reactor.kafka.sender.SenderOptions
 
 @Configuration
-class WalletCDCClientConfiguration {
+class WalletCDCClientConfiguration(private val environment: Environment) {
 
     @Bean(name = ["cdcEventHubClient"])
     fun cdcKafkaTemplate(
@@ -29,7 +30,7 @@ class WalletCDCClientConfiguration {
             )
 
         // Local testing in Docker do not require SASL
-        if (!walletCDCConfiguration.connectionString.startsWith("kafka")) {
+        if (!environment.activeProfiles.contains("local")) {
             configProps[SaslConfigs.SASL_JAAS_CONFIG] =
                 "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"\$ConnectionString\" password=\"${walletCDCConfiguration.connectionString}\";"
             configProps[SaslConfigs.SASL_MECHANISM] = "PLAIN"
