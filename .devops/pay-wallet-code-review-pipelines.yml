@@ -76,12 +76,10 @@ stages:
               timeout 180 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8080/actuator/health/liveness)" != "200" ]]; do sleep 5; done' || exit 1
             displayName: 'Health check pagopa-wallet-eventdispatcher'
           - script: |
-              targetEvent=$(cat docker-local/example-event.json)
-
               az storage message put \
                 --connection-string "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;QueueEndpoint=http://localhost:10001/devstoreaccount1" \
                 --queue-name pagopa-wallet-cdc-queue \
-                --content "$targetEvent"
+                --content @docker-local/example-event.json
             displayName: 'Write message to Azurite queue'
 
           - script: |
@@ -96,7 +94,8 @@ stages:
               echo "Number of messages in the topic: $message_count"
 
               eventFromKafka=$(kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic payment-wallet-injection-topic --from-beginning --timeout-ms 5000 --max-messages 1)
-              expectedDataEvent=$(cat docker-local/example-event.json)
+
+              expectedDataEvent=$(cat docker-local/example-event-result.json)
 
               echo "event found: $eventFromKafka"
               if [ "$eventFromKafka" == "$expectedDataEvent" ]; then
