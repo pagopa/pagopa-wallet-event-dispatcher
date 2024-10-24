@@ -82,7 +82,6 @@ microservice-chart:
     WALLET_SERVICE_READ_TIMEOUT: "10000"
     WALLET_SERVICE_CONNECTION_TIMEOUT: "10000"
     WALLET_EXPIRATION_QUEUE_NAME: "pagopa-u-itn-pay-wallet-expiration-queue"
-    AZURE_EVENTHUB_CONNECTION_STRING: "kafka:29092"
     AZURE_EVENTHUB_TOPIC_NAME: "payment-wallet-ingestion-dl"
     AZURE_EVENTHUB_BOOTSTRAP_SERVER: "pagopa-u-itn-observ-evh.servicebus.windows.net:9093"
     CDC_SEND_RETRY_MAX_ATTEMPTS: "1"
