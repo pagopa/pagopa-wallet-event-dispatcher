@@ -6,31 +6,31 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.kotlinModule
-import it.pagopa.wallet.eventdispatcher.common.serialization.WalletEventMixin
-import it.pagopa.wallet.eventdispatcher.domain.WalletEvent
+import it.pagopa.wallet.eventdispatcher.common.cdc.LoggingEvent
+import it.pagopa.wallet.eventdispatcher.common.serialization.CdcWalletEventMixin
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 
 @Configuration
-class SerializationConfiguration {
+class CdcSerializationConfiguration {
 
-    @Bean("objectMapperBuilder")
-    fun objectMapperBuilder(): Jackson2ObjectMapperBuilder =
+    @Bean("cdcObjectMapperBuilder")
+    fun cdcObjectMapperBuilder(): Jackson2ObjectMapperBuilder =
         Jackson2ObjectMapperBuilder()
             .modules(Jdk8Module(), JavaTimeModule(), kotlinModule())
-            .mixIn(WalletEvent::class.java, WalletEventMixin::class.java)
+            .mixIn(LoggingEvent::class.java, CdcWalletEventMixin::class.java)
 
-    @Bean("objectMapper")
-    fun objectMapper(
-        @Qualifier("objectMapperBuilder") objectMapperBuilder: Jackson2ObjectMapperBuilder
-    ): ObjectMapper = objectMapperBuilder.build()
+    @Bean("cdcObjectMapper")
+    fun cdcObjectMapper(
+        @Qualifier("cdcObjectMapperBuilder") cdcObjectMapperBuilder: Jackson2ObjectMapperBuilder
+    ): ObjectMapper = cdcObjectMapperBuilder.build()
 
-    @Bean("azureJsonSerializer")
-    fun azureJsonSerializer(
-        @Qualifier("objectMapper") objectMapper: ObjectMapper
+    @Bean("cdcAzureJsonSerializer")
+    fun cdcAzureJsonSerializer(
+        @Qualifier("cdcObjectMapper") cdcObjectMapper: ObjectMapper
     ): JsonSerializerProvider = JsonSerializerProvider {
-        JacksonJsonSerializerBuilder().serializer(objectMapper).build()
+        JacksonJsonSerializerBuilder().serializer(cdcObjectMapper).build()
     }
 }

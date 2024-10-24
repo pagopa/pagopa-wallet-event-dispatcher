@@ -13,6 +13,7 @@ import org.springframework.integration.annotation.Poller
 class QueueConsumerConfiguration {
     companion object {
         const val WALLET_EXPIRATION_CHANNEL = "walletExpirationChannel"
+        const val WALLET_CDC_CHANNEL = "walletCdcChannel"
     }
 
     @Bean
@@ -30,4 +31,19 @@ class QueueConsumerConfiguration {
         storageQueueTemplate: StorageQueueTemplate,
         @Value("\${azure.storage.queues.wallet.expiration.name}") walletUsageQueueName: String
     ) = StorageQueueMessageSource(walletUsageQueueName, storageQueueTemplate)
+
+    @Bean
+    @InboundChannelAdapter(
+        channel = WALLET_CDC_CHANNEL,
+        poller =
+            Poller(
+                fixedDelay = "\${azure.storage.queues.wallet.cdc.polling.fixedDelay}",
+                maxMessagesPerPoll = "\${azure.storage.queues.wallet.cdc.polling.maxMessagePerPoll}"
+            )
+    )
+    @EndpointId("storageQueueWalletCdcMessageSourceEndpoint")
+    fun storageQueueWalletCdcMessageSource(
+        storageQueueTemplate: StorageQueueTemplate,
+        @Value("\${azure.storage.queues.wallet.cdc.name}") walletCdcQueueName: String
+    ) = StorageQueueMessageSource(walletCdcQueueName, storageQueueTemplate)
 }

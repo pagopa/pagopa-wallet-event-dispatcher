@@ -3,7 +3,7 @@ import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 group = "it.pagopa.wallet.eventdispatcher"
 
-version = "0.4.4"
+version = "0.4.5"
 
 description = "pagopa-wallet-event-dispatcher-service"
 
@@ -116,6 +116,11 @@ dependencies {
   testImplementation("org.mockito.kotlin:mockito-kotlin:${Deps.mockitoKotlin}")
 
   testImplementation("com.squareup.okhttp3:mockwebserver:${Deps.mockWebServer}")
+
+  // Azure Event Hubs (Kafka)
+  implementation("org.springframework.kafka:spring-kafka")
+  implementation("org.apache.kafka:kafka-clients")
+  implementation("io.projectreactor.kafka:reactor-kafka:1.3.23")
 }
 
 configurations {

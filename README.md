@@ -67,6 +67,11 @@ If you want to customize the application environment, reference this table:
 | WALLET_SERVICE_URI                                   | Wallet service endpoint                                                                    | string |                         |
 | WALLET_SERVICE_READ_TIMEOUT                          | Wallet service read timeout                                                                | number | 10000                   |
 | WALLET_SERVICE_CONNECTION_TIMEOUT                    | Wallet service connection timeout                                                          | number | 10000                   |
+| AZURE_EVENTHUB_CONNECTION_STRING                     | Azure event hub connection string                                                          | string |                         |
+| AZURE_EVENTHUB_TOPIC_NAME                            | Azure event hub topic name                                                                 | string |                         |
+| CDC_SEND_RETRY_MAX_ATTEMPTS                          | Max configurable attempts for performing the logic business related to a change event      | number |                         |                               
+| CDC_SEND_RETRY_INTERVAL_IN_MS                        | Configurable interval in milliseconds between retries attempts                             | number |                         |
+| WALLET_CDC_QUEUE_NAME                                | Storage queue name for event sent by cdc hub                                               | string | wallet-cdc-queue        |
 
 ### Run docker container
 
