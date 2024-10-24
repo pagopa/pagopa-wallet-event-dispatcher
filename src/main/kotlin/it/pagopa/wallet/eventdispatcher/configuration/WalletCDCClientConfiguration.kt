@@ -1,7 +1,9 @@
 package it.pagopa.wallet.eventdispatcher.configuration
 
 import it.pagopa.wallet.eventdispatcher.configuration.properties.WalletCDCConfiguration
+import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.producer.ProducerConfig
+import org.apache.kafka.common.config.SaslConfigs
 import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -26,11 +28,12 @@ class WalletCDCClientConfiguration {
                     ErrorHandlingDeserializer::class.java
             )
 
+        // Local testing in Docker do not require SASL
         if (!walletCDCConfiguration.connectionString.startsWith("kafka")) {
-            configProps["sasl.jaas.config"] =
+            configProps[SaslConfigs.SASL_JAAS_CONFIG] =
                 "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"\$ConnectionString\" password=\"${walletCDCConfiguration.connectionString}\";"
-            configProps["sasl.mechanism"] = "PLAIN"
-            configProps["security.protocol"] = "SASL_SSL"
+            configProps[SaslConfigs.SASL_MECHANISM] = "PLAIN"
+            configProps[CommonClientConfigs.SECURITY_PROTOCOL_CONFIG] = "SASL_SSL"
         }
 
         val senderOptions = SenderOptions.create<String, Any>(configProps)
