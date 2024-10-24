@@ -1,7 +1,9 @@
 package it.pagopa.wallet.eventdispatcher.configuration
 
 import it.pagopa.wallet.eventdispatcher.configuration.properties.WalletCDCConfiguration
+import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.producer.ProducerConfig
+import org.apache.kafka.common.config.SaslConfigs
 import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -24,10 +26,10 @@ class WalletCDCClientConfiguration {
                 ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to JsonSerializer::class.java,
                 ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS to
                     ErrorHandlingDeserializer::class.java,
-                "sasl.jaas.config" to
+                SaslConfigs.SASL_JAAS_CONFIG to
                     "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"\$ConnectionString\" password=\"${walletCDCConfiguration.connectionString}\";",
-                "sasl.mechanism" to "PLAIN",
-                "security.protocol" to "SASL_SSL"
+                SaslConfigs.SASL_MECHANISM to "PLAIN",
+                CommonClientConfigs.SECURITY_PROTOCOL_CONFIG to "SASL_SSL"
             )
 
         val senderOptions = SenderOptions.create<String, Any>(configProps)
