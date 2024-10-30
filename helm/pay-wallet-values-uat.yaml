@@ -1,7 +1,7 @@
 microservice-chart:
   namespace: "pay-wallet"
-  nameOverride: ""
-  fullnameOverride: "pagopa-pay-wallet-event-dispatcher-microservice"
+  nameOverride: "b-pagopa-pay-wallet-event-dispatcher"
+  fullnameOverride: "b-pagopa-pay-wallet-event-dispatcher"
   image:
     repository: pagopauitncoreacr.azurecr.io/pagopapaymentwalleteventdispatcherservice
     tag: "0.1.2"
@@ -22,6 +22,7 @@ microservice-chart:
     periodSeconds: 10
   deployment:
     create: true
+    replicas: 3
   service:
     create: true
     type: ClusterIP
@@ -30,7 +31,7 @@ microservice-chart:
   ingress:
     create: true
     host: "itnuat.wallet.internal.uat.platform.pagopa.it"
-    path: /pagopa-wallet-event-dispatcher-service/(.*)
+    path: /blue/pagopa-wallet-event-dispatcher-service/(.*)
     servicePort: 8080
   serviceAccount:
     create: false
@@ -51,8 +52,8 @@ microservice-chart:
       cpu: "300m"
   autoscaling:
     enable: true
-    minReplica: 1
-    maxReplica: 2
+    minReplica: 3
+    maxReplica: 10
     pollingInterval: 30 # seconds
     cooldownPeriod: 300 # seconds
     triggers:
@@ -65,7 +66,7 @@ microservice-chart:
     ENV: 'uat'
     APP_LOGGING_LEVEL: 'DEBUG'
     DEFAULT_LOGGING_LEVEL: 'INFO'
-    OTEL_SERVICE_NAME: "pagopa-payment-wallet-event-dispatcher-service"
+    OTEL_SERVICE_NAME: "pagopa-payment-wallet-event-dispatcher-service-blue"
     OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=uat"
     OTEL_EXPORTER_OTLP_ENDPOINT: "https://weuuat.kibana.internal.uat.platform.pagopa.it/apm"
     OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
@@ -77,22 +78,22 @@ microservice-chart:
     OTEL_INSTRUMENTATION_SPRING_INTEGRATION_ENABLED: "true"
     WALLET_STORAGE_QUEUE_ACCOUNT_NAME: pagopauitnpaywalletsa
     WALLET_STORAGE_QUEUE_ENDPOINT: https://pagopauitnpaywalletsa.queue.core.windows.net/pagopauitnpaywalletsa
-    WALLET_USAGE_QUEUE_NAME: pagopa-u-itn-pay-wallet-usage-update-queue
-    WALLET_SERVICE_URI: "http://pagopa-pay-wallet-microservice.pay-wallet.svc:8080"
+    WALLET_USAGE_QUEUE_NAME: pagopa-u-itn-pay-wallet-usage-update-queue-b
+    WALLET_SERVICE_URI: "http://b-pagopa-pay-wallet-microservice.pay-wallet.svc:8080/beta"
     WALLET_SERVICE_READ_TIMEOUT: "10000"
     WALLET_SERVICE_CONNECTION_TIMEOUT: "10000"
-    WALLET_EXPIRATION_QUEUE_NAME: "pagopa-u-itn-pay-wallet-expiration-queue"
-    AZURE_EVENTHUB_TOPIC_NAME: "payment-wallet-ingestion-dl"
+    WALLET_EXPIRATION_QUEUE_NAME: "pagopa-u-itn-pay-wallet-expiration-queue-b"
+    AZURE_EVENTHUB_TOPIC_NAME: "payment-wallet-ingestion-dl-soak-test"
     AZURE_EVENTHUB_BOOTSTRAP_SERVER: "pagopa-u-itn-observ-evh.servicebus.windows.net:9093"
     CDC_SEND_RETRY_MAX_ATTEMPTS: "1"
     CDC_SEND_RETRY_INTERVAL_IN_MS: "1000"
-    WALLET_CDC_QUEUE_NAME: "pagopa-u-itn-pay-wallet-cdc-queue"
+    WALLET_CDC_QUEUE_NAME: "pagopa-u-itn-pay-wallet-cdc-queue-b"
     WALLET_CDC_QUEUE_POLLING_MAX_MESSAGE_PER_POLL: "10"
     WALLET_CDC_QUEUE_POLLING_FIXED_DELAY_MS: "1000"
   envSecret:
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     WALLET_STORAGE_QUEUE_KEY: wallet-storage-account-key
-    AZURE_EVENTHUB_CONNECTION_STRING: sender-evt-tx-event-hub-connection-string
+    AZURE_EVENTHUB_CONNECTION_STRING: sender-evt-tx-event-hub-connection-string-soak-test
   keyvault:
     name: "pagopa-u-pay-wallet-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
