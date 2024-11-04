@@ -76,6 +76,7 @@ dependencies {
   implementation("com.azure.spring:spring-cloud-azure-starter-integration-storage-queue")
   implementation("com.azure:azure-storage-queue")
   implementation("com.azure:azure-core-serializer-json-jackson")
+  implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
   implementation("org.springframework.boot:spring-boot-starter-actuator")
   implementation("org.springframework.boot:spring-boot-starter-webflux")

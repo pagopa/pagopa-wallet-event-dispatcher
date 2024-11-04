@@ -1,5 +1,6 @@
 package it.pagopa.wallet.eventdispatcher
 
+import it.pagopa.wallet.eventdispatcher.configuration.properties.RedisResumePolicyConfig
 import it.pagopa.wallet.eventdispatcher.configuration.properties.RetrySendPolicyConfig
 import it.pagopa.wallet.eventdispatcher.configuration.properties.WalletCDCConfiguration
 import it.pagopa.wallet.eventdispatcher.configuration.properties.WalletsApiConfiguration
@@ -15,7 +16,8 @@ import reactor.core.publisher.Hooks
 @EnableConfigurationProperties(
     WalletsApiConfiguration::class,
     WalletCDCConfiguration::class,
-    RetrySendPolicyConfig::class
+    RetrySendPolicyConfig::class,
+    RedisResumePolicyConfig::class
 )
 class WalletEventDispatcherApplication
 

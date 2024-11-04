@@ -90,6 +90,11 @@ microservice-chart:
     WALLET_CDC_QUEUE_NAME: "pagopa-p-itn-pay-wallet-cdc-queue"
     WALLET_CDC_QUEUE_POLLING_MAX_MESSAGE_PER_POLL: "10"
     WALLET_CDC_QUEUE_POLLING_FIXED_DELAY_MS: "1000"
+    CDC_REDIS_RESUME_KEYSPACE: "cdcResume"
+    CDC_REDIS_RESUME_TARGET: "walletLogEvents"
+    CDC_REDIS_RESUME_FALLBACK_IN_MIN: "60"
+    CDC_REDIS_RESUME_TTL_IN_MIN: "1440"
+    CDC_RESUME_SAVE_INTERVAL: "5"
   envSecret:
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     WALLET_STORAGE_QUEUE_KEY: wallet-storage-account-key
