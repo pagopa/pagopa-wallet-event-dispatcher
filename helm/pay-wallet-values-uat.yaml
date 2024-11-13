@@ -10,19 +10,19 @@ microservice-chart:
     httpGet:
       path: /actuator/health/liveness
       port: 8080
-    initialDelaySeconds: 90
+    initialDelaySeconds: 30
     failureThreshold: 6
     periodSeconds: 10
   readinessProbe:
     httpGet:
       path: /actuator/health/readiness
       port: 8080
-    initialDelaySeconds: 90
+    initialDelaySeconds: 30
     failureThreshold: 6
     periodSeconds: 10
   deployment:
     create: true
-    replicas: 5
+    replicas: 6
   service:
     create: true
     type: ClusterIP
@@ -49,10 +49,10 @@ microservice-chart:
       cpu: "300m"
     limits:
       memory: "512Mi"
-      cpu: "300m"
+      cpu: "900m"
   autoscaling:
     enable: true
-    minReplica: 5
+    minReplica: 6
     maxReplica: 10
     pollingInterval: 30 # seconds
     cooldownPeriod: 300 # seconds
