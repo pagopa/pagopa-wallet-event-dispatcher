@@ -22,6 +22,8 @@ object Deps {
   const val mockWebServer = "4.12.0"
   const val openTelemetryVersion = "1.37.0"
   const val openTelemetryInstrumentationVersion = "2.3.0-alpha"
+  const val mockitoInline = "5.2.0"
+  const val reactorKafka = "1.3.23"
 }
 
 plugins {
@@ -65,7 +67,6 @@ dependencyManagement {
 
 dependencies {
   implementation("com.azure.spring:spring-cloud-azure-starter")
-  implementation("com.azure.spring:spring-cloud-azure-starter-data-cosmos")
   implementation("io.projectreactor:reactor-core")
 
   // spring integration
@@ -79,6 +80,7 @@ dependencies {
 
   implementation("org.springframework.boot:spring-boot-starter-actuator")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
+  implementation("org.springframework.boot:spring-boot-starter-data-redis")
   implementation("com.google.code.findbugs:jsr305:${Deps.googleFindBugs}")
   implementation("org.projectlombok:lombok")
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
@@ -105,22 +107,22 @@ dependencies {
   implementation("org.openapitools:jackson-databind-nullable:${Deps.openapiDataBinding}")
   implementation("jakarta.xml.bind:jakarta.xml.bind-api")
 
+  // Azure Event Hubs (Kafka)
+  implementation("org.springframework.kafka:spring-kafka")
+  implementation("org.apache.kafka:kafka-clients")
+  implementation("io.projectreactor.kafka:reactor-kafka:${Deps.reactorKafka}")
+
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
   runtimeOnly("org.springframework.boot:spring-boot-devtools")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
-  testImplementation("org.mockito:mockito-inline:5.2.0")
+  testImplementation("org.mockito:mockito-inline:${Deps.mockitoInline}")
   testImplementation("io.projectreactor:reactor-test")
   // Kotlin dependencies
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
   testImplementation("org.mockito.kotlin:mockito-kotlin:${Deps.mockitoKotlin}")
 
   testImplementation("com.squareup.okhttp3:mockwebserver:${Deps.mockWebServer}")
-
-  // Azure Event Hubs (Kafka)
-  implementation("org.springframework.kafka:spring-kafka")
-  implementation("org.apache.kafka:kafka-clients")
-  implementation("io.projectreactor.kafka:reactor-kafka:1.3.23")
 }
 
 configurations {
