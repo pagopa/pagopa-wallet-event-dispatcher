@@ -1,18 +1,14 @@
 package it.pagopa.wallet.eventdispatcher.streams.commands
 
-import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import java.util.*
 
 /** Event dispatcher generic command event class */
 @JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
+    use = JsonTypeInfo.Id.CLASS,
     include = JsonTypeInfo.As.PROPERTY,
-    property = "type",
-    visible = true
-)
-@JsonSubTypes(
-    JsonSubTypes.Type(value = EventDispatcherReceiverCommand::class, name = "RECEIVER_COMMAND"),
+    property = "_class",
+    visible = false
 )
 sealed class EventDispatcherGenericCommand(
     val commandId: UUID = UUID.randomUUID(),

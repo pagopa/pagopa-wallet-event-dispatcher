@@ -6,7 +6,6 @@ import it.pagopa.wallet.eventdispatcher.configuration.redis.EventDispatcherComma
 import it.pagopa.wallet.eventdispatcher.configuration.redis.EventDispatcherReceiverStatusTemplateWrapper
 import it.pagopa.wallet.eventdispatcher.exceptions.NoEventReceiverStatusFound
 import it.pagopa.wallet.eventdispatcher.streams.commands.EventDispatcherReceiverCommand
-import jakarta.annotation.PreDestroy
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -81,14 +80,5 @@ class EventReceiverService(
                 }
 
         return EventReceiverStatusResponseDto(status = receiverStatuses)
-    }
-
-    @PreDestroy
-    fun close() {
-        logger.info("Deleting consumer group with id ${redisStreamConf.consumerGroup}")
-        eventDispatcherCommandsTemplateWrapper.destroyGroup(
-            redisStreamConf.streamKey,
-            redisStreamConf.consumerGroup
-        )
     }
 }
