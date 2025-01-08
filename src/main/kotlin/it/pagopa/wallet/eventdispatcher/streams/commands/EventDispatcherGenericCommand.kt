@@ -1,4 +1,4 @@
-package it.pagopa.wallet.eventdispatcher.repositories.redis.commands
+package it.pagopa.wallet.eventdispatcher.streams.commands
 
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo

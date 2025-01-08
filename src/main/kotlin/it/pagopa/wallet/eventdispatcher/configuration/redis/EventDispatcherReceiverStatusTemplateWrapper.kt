@@ -1,7 +1,7 @@
-package it.pagopa.ecommerce.eventdispatcher.config.redis
+package it.pagopa.wallet.eventdispatcher.configuration.redis
 
-import it.pagopa.ecommerce.commons.redis.templatewrappers.RedisTemplateWrapper
-import it.pagopa.ecommerce.eventdispatcher.config.redis.bean.ReceiversStatus
+import it.pagopa.wallet.eventdispatcher.repositories.redis.bean.ReceiversStatus
+import it.pagopa.wallet.eventdispatcher.utils.RedisTemplateWrapper
 import java.time.Duration
 import org.springframework.data.redis.core.RedisTemplate
 

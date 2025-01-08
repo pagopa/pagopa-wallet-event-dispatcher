@@ -24,6 +24,7 @@ object Deps {
   const val openTelemetryInstrumentationVersion = "2.3.0-alpha"
   const val mockitoInline = "5.2.0"
   const val reactorKafka = "1.3.23"
+  const val swaggerAnnotations = "2.2.8"
 }
 
 plugins {
@@ -106,6 +107,7 @@ dependencies {
   implementation("org.openapitools:openapi-generator-gradle-plugin:${Deps.openapiGenerator}")
   implementation("org.openapitools:jackson-databind-nullable:${Deps.openapiDataBinding}")
   implementation("jakarta.xml.bind:jakarta.xml.bind-api")
+  implementation("io.swagger.core.v3:swagger-annotations:${Deps.swaggerAnnotations}")
 
   // Azure Event Hubs (Kafka)
   implementation("org.springframework.kafka:spring-kafka")
@@ -159,7 +161,7 @@ tasks.create("applySemanticVersionPlugin") {
 }
 
 tasks.withType<KotlinCompile> {
-  dependsOn("walletsApi")
+  dependsOn("walletsApi", "eventDispatcherApi")
   kotlinOptions.jvmTarget = "17"
 }
 
@@ -248,4 +250,36 @@ tasks.register<GenerateTask>("walletsApi") {
       "useOneOfInterfaces" to "true"
     )
   )
+}
+
+tasks.register<GenerateTask>("eventDispatcherApi") {
+  description = "Generate API client based on Payment wallet event dispatcher OpenAPI spec"
+  group = "openapi-generate"
+
+  generatorName = "kotlin-spring"
+  inputSpec = "$projectDir/api-spec/event-dispatcher-api.yaml"
+  outputDir = layout.buildDirectory.dir("generated").get().asFile.path
+  apiPackage = "it.pagopa.generated.paymentwallet.eventdispatcher.server.api"
+  modelPackage = "it.pagopa.generated.paymentwallet.eventdispatcher.server.model"
+  generateApiTests = false
+  generateApiDocumentation = false
+  generateModelTests = false
+  library = "spring-boot"
+  modelNameSuffix = "Dto"
+  configOptions =
+    mapOf(
+      "swaggerAnnotations" to "false",
+      "openApiNullable" to "true",
+      "interfaceOnly" to "true",
+      "hideGenerationTimestamp" to "true",
+      "skipDefaultInterface" to "true",
+      "useSwaggerUI" to "false",
+      "reactive" to "true",
+      "useSpringBoot3" to "true",
+      "oas3" to "true",
+      "generateSupportingFiles" to "false",
+      "enumPropertyNaming" to "UPPERCASE",
+      "useJakartaEe" to "true",
+      "useOneOfInterfaces" to "true"
+    )
 }

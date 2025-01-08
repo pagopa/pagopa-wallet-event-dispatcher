@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import it.pagopa.wallet.eventdispatcher.configuration.properties.RedisStreamEventControllerConfigs
 import it.pagopa.wallet.eventdispatcher.configuration.redis.EventDispatcherCommandsTemplateWrapper
-import it.pagopa.wallet.eventdispatcher.repositories.redis.commands.EventDispatcherGenericCommand
+import it.pagopa.wallet.eventdispatcher.streams.commands.EventDispatcherGenericCommand
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.data.redis.connection.stream.Consumer

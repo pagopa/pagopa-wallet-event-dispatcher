@@ -1,7 +1,7 @@
 package it.pagopa.wallet.eventdispatcher.configuration.redis
 
-import it.pagopa.wallet.eventdispatcher.repositories.redis.RedisTemplateWrapper
-import it.pagopa.wallet.eventdispatcher.repositories.redis.commands.EventDispatcherReceiverCommand
+import it.pagopa.wallet.eventdispatcher.streams.commands.EventDispatcherReceiverCommand
+import it.pagopa.wallet.eventdispatcher.utils.RedisTemplateWrapper
 import java.time.Duration
 import org.springframework.data.redis.core.RedisTemplate
 

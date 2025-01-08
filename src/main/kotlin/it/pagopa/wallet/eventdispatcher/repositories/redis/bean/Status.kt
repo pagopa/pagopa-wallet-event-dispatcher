@@ -1,4 +1,4 @@
-package it.pagopa.wallet.eventdispatcher.configuration.redis.bean
+package it.pagopa.wallet.eventdispatcher.repositories.redis.bean
 
 /** Enumeration of event receiver status */
 enum class Status {

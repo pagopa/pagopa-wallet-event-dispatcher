@@ -1,6 +1,6 @@
-package it.pagopa.wallet.eventdispatcher.repositories.redis.commands
+package it.pagopa.wallet.eventdispatcher.streams.commands
 
-import it.pagopa.generated.eventdispatcher.server.model.DeploymentVersionDto
+import it.pagopa.generated.paymentwallet.eventdispatcher.server.model.DeploymentVersionDto
 
 /** Event dispatcher command event used to start/stop all receivers */
 data class EventDispatcherReceiverCommand(

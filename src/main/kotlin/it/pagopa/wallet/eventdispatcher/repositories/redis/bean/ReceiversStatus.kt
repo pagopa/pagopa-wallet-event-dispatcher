@@ -1,6 +1,6 @@
-package it.pagopa.wallet.eventdispatcher.configuration.redis.bean
+package it.pagopa.wallet.eventdispatcher.repositories.redis.bean
 
-import it.pagopa.generated.eventdispatcher.server.model.DeploymentVersionDto
+import it.pagopa.generated.paymentwallet.eventdispatcher.server.model.DeploymentVersionDto
 
 /** Data class that contain all information about a specific event receiver */
 data class ReceiversStatus(

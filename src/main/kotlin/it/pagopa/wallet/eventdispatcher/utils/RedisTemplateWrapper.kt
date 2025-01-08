@@ -1,4 +1,4 @@
-package it.pagopa.wallet.eventdispatcher.repositories.redis
+package it.pagopa.wallet.eventdispatcher.utils
 
 import java.time.Duration
 import org.springframework.data.redis.connection.stream.ObjectRecord
