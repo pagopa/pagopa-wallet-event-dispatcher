@@ -38,7 +38,7 @@ services:
     depends_on:
       - storage
     environment:
-      QUEUE_WALLET_UPDATE: pagopa-wallet-usage-update-queue
+      QUEUE_WALLET_EXPIRATION: wallet-expiration-queue
       QUEUE_CDC_WALLET: pagopa-wallet-cdc-queue
     networks:
       - pagopa-wallet-net
@@ -101,6 +101,24 @@ services:
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
     depends_on:
       - kafka
+    networks:
+      - pagopa-wallet-net
+
+
+  redis:
+    container_name: wallet-redis
+    image: redis@sha256:e422889e156ebea83856b6ff973bfe0c86bce867d80def228044eeecf925592b
+    command: [ "sh", "-c", 'exec redis-server --requirepass "$$REDIS_PASSWORD"' ]
+    ports:
+      - "6379:6379"
+    networks:
+      - pagopa-wallet-net
+
+  redis-insight:
+    container_name: wallet-redis-insight
+    image: redislabs/redisinsight@sha256:bbfe06e00282fc051bbfadd49286865e75b359baea62f0d56af0cb0d5684b942
+    ports:
+      - "5540:5540"
     networks:
       - pagopa-wallet-net
 

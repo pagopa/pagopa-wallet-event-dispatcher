@@ -9,6 +9,7 @@ COPY gradle.lockfile .
 COPY gradle.properties .
 
 COPY eclipse-style.xml eclipse-style.xml
+COPY api-spec api-spec
 COPY src src
 RUN ./gradlew build -x test
 RUN mkdir build/extracted && java -Djarmode=layertools -jar build/libs/*.jar extract --destination build/extracted
@@ -34,4 +35,6 @@ RUN true
 COPY --from=build --chown=user ${EXTRACTED}/application/ ./
 RUN true
 
-ENTRYPOINT ["java","-javaagent:opentelemetry-javaagent.jar","org.springframework.boot.loader.launch.JarLauncher"]
+CMD ["-javaagent:opentelemetry-javaagent.jar","org.springframework.boot.loader.launch.JarLauncher"]
+
+ENTRYPOINT ["java"]
