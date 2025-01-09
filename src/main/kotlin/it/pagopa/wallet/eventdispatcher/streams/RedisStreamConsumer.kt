@@ -20,6 +20,8 @@ import org.springframework.data.redis.connection.stream.RecordId
 import org.springframework.data.redis.connection.stream.StreamOffset
 import org.springframework.data.redis.stream.StreamReceiver
 import org.springframework.stereotype.Service
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
 import reactor.util.retry.Retry
 
@@ -33,7 +35,6 @@ class RedisStreamConsumer(
     private val inboundChannelAdapterLifecycleHandlerService:
         InboundChannelAdapterLifecycleHandlerService,
     @Value("\${eventController.deploymentVersion}")
-    @Autowired
     private val deploymentVersion: DeploymentVersionDto,
     @Autowired
     private val redisStreamReceiver:
@@ -48,11 +49,29 @@ class RedisStreamConsumer(
     override fun onApplicationEvent(applicationReadyEvent: ApplicationReadyEvent) {
         // register stream receiver
         logger.info("Starting Redis stream receiver")
-        redisStreamReceiver
-            .receive(
-                StreamOffset.create(redisStreamConf.streamKey, ReadOffset.from(RecordId.of(0, 0)))
-            )
-            .subscribeOn(Schedulers.parallel())
+        eventStreamPipelineWithRetry().subscribeOn(Schedulers.parallel()).subscribe {
+            runCatching {
+                    val event =
+                        objectMapper.convertValue(
+                            it.value,
+                            EventDispatcherGenericCommand::class.java
+                        )
+                    processStreamEvent(event = event)
+                }
+                .onFailure { logger.error("Error processing redis stream event", it) }
+        }
+    }
+
+    fun eventStreamPipelineWithRetry(): Flux<ObjectRecord<String, LinkedHashMap<*, *>>> =
+        Mono.just(1)
+            .flatMapMany {
+                redisStreamReceiver.receive(
+                    StreamOffset.create(
+                        redisStreamConf.streamKey,
+                        ReadOffset.from(RecordId.of(0, 0))
+                    )
+                )
+            }
             .retryWhen(
                 Retry.fixedDelay(Long.MAX_VALUE, Duration.ofSeconds(1)).doBeforeRetry {
                     logger.warn(
@@ -61,18 +80,6 @@ class RedisStreamConsumer(
                     )
                 }
             )
-            .subscribe {
-                runCatching {
-                        val event =
-                            objectMapper.convertValue(
-                                it.value,
-                                EventDispatcherGenericCommand::class.java
-                            )
-                        processStreamEvent(event = event)
-                    }
-                    .onFailure { logger.error("Error processing redis stream event", it) }
-            }
-    }
 
     fun processStreamEvent(event: EventDispatcherGenericCommand) {
         logger.info("Received event: {}", event)
@@ -82,10 +89,9 @@ class RedisStreamConsumer(
     }
 
     /** Handle event receiver command to start/stop receivers */
-    private fun handleEventReceiverCommand(command: EventDispatcherReceiverCommand) {
+    fun handleEventReceiverCommand(command: EventDispatcherReceiverCommand) {
         // current deployment version is targeted by command for exact version match or if command
-        // does
-        // not explicit a targeted version
+        // does not explicit a targeted version
         val currentDeploymentVersion = deploymentVersion
         val commandTargetVersion = command.version
         val isTargetedByCommand =

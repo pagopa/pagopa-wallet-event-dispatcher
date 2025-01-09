@@ -49,35 +49,34 @@ class EventReceiverService(
     suspend fun getReceiversStatus(
         deploymentVersionDto: DeploymentVersionDto?
     ): EventReceiverStatusResponseDto {
-        val lastStatuses = eventDispatcherReceiverStatusTemplateWrapper.allValuesInKeySpace()
+        val lastStatuses =
+            eventDispatcherReceiverStatusTemplateWrapper.allValuesInKeySpace()?.filter {
+                if (deploymentVersionDto != null) {
+                    it.version == deploymentVersionDto
+                } else {
+                    true
+                }
+            }
         if (lastStatuses.isNullOrEmpty()) {
             throw NoEventReceiverStatusFound()
         }
         val receiverStatuses =
-            lastStatuses
-                .filter {
-                    if (deploymentVersionDto != null) {
-                        it.version == deploymentVersionDto
-                    } else {
-                        true
-                    }
-                }
-                .map { receiverStatuses ->
-                    EventReceiverStatusDto(
-                        receiverStatuses =
-                            receiverStatuses.receiverStatuses.map { receiverStatus ->
-                                ReceiverStatusDto(
-                                    status =
-                                        receiverStatus.status.let {
-                                            ReceiverStatusDto.Status.valueOf(it.toString())
-                                        },
-                                    name = receiverStatus.name
-                                )
-                            },
-                        instanceId = receiverStatuses.consumerInstanceId,
-                        deploymentVersion = receiverStatuses.version
-                    )
-                }
+            lastStatuses.map { receiverStatuses ->
+                EventReceiverStatusDto(
+                    receiverStatuses =
+                        receiverStatuses.receiverStatuses.map { receiverStatus ->
+                            ReceiverStatusDto(
+                                status =
+                                    receiverStatus.status.let {
+                                        ReceiverStatusDto.Status.valueOf(it.toString())
+                                    },
+                                name = receiverStatus.name
+                            )
+                        },
+                    instanceId = receiverStatuses.consumerInstanceId,
+                    deploymentVersion = receiverStatuses.version
+                )
+            }
 
         return EventReceiverStatusResponseDto(status = receiverStatuses)
     }
