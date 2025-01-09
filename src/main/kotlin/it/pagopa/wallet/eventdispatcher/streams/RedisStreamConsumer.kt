@@ -20,6 +20,7 @@ import org.springframework.data.redis.connection.stream.StreamOffset
 import org.springframework.data.redis.stream.StreamReceiver
 import org.springframework.stereotype.Service
 import reactor.core.scheduler.Schedulers
+import reactor.util.retry.Retry
 
 /**
  * Redis Stream event consumer. This class handles all Redis Stream events performing requested
@@ -51,20 +52,25 @@ class RedisStreamConsumer(
                 StreamOffset.create(redisStreamConf.streamKey, ReadOffset.from(RecordId.of(0, 0)))
             )
             .subscribeOn(Schedulers.parallel())
-            .subscribe(
-                {
-                    runCatching {
-                            val event =
-                                objectMapper.convertValue(
-                                    it.value,
-                                    EventDispatcherGenericCommand::class.java
-                                )
-                            processStreamEvent(event = event)
-                        }
-                        .onFailure { logger.error("Error processing redis stream event", it) }
-                },
-                { logger.error("Exception during redis stream processing", it) }
+            .retryWhen(
+                Retry.indefinitely().doBeforeRetry {
+                    logger.warn(
+                        "Detected error in redis stream connection, reconnecting",
+                        it.failure()
+                    )
+                }
             )
+            .subscribe {
+                runCatching {
+                        val event =
+                            objectMapper.convertValue(
+                                it.value,
+                                EventDispatcherGenericCommand::class.java
+                            )
+                        processStreamEvent(event = event)
+                    }
+                    .onFailure { logger.error("Error processing redis stream event", it) }
+            }
     }
 
     fun processStreamEvent(event: EventDispatcherGenericCommand) {
