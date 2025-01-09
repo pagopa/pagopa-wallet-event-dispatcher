@@ -7,6 +7,7 @@ import it.pagopa.wallet.eventdispatcher.configuration.properties.RedisStreamEven
 import it.pagopa.wallet.eventdispatcher.service.InboundChannelAdapterLifecycleHandlerService
 import it.pagopa.wallet.eventdispatcher.streams.commands.EventDispatcherGenericCommand
 import it.pagopa.wallet.eventdispatcher.streams.commands.EventDispatcherReceiverCommand
+import java.time.Duration
 import java.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -53,7 +54,7 @@ class RedisStreamConsumer(
             )
             .subscribeOn(Schedulers.parallel())
             .retryWhen(
-                Retry.indefinitely().doBeforeRetry {
+                Retry.fixedDelay(Long.MAX_VALUE, Duration.ofSeconds(1)).doBeforeRetry {
                     logger.warn(
                         "Detected error in redis stream connection, reconnecting",
                         it.failure()
