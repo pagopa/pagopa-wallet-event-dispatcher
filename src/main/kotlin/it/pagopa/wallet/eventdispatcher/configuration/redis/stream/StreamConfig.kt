@@ -25,7 +25,7 @@ class StreamConfig {
         val objectMapper = jacksonObjectMapper()
         val streamReceiverOptions =
             StreamReceiver.StreamReceiverOptions.builder()
-                .pollTimeout(Duration.ofMillis(1000))
+                .pollTimeout(Duration.ofSeconds(1))
                 .batchSize(1) // read one item per poll
                 .keySerializer(
                     RedisSerializationContext.SerializationPair.fromSerializer(
