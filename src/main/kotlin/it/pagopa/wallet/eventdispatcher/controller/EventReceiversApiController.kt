@@ -5,7 +5,6 @@ import it.pagopa.generated.paymentwallet.eventdispatcher.server.model.Deployment
 import it.pagopa.generated.paymentwallet.eventdispatcher.server.model.EventReceiverCommandRequestDto
 import it.pagopa.generated.paymentwallet.eventdispatcher.server.model.EventReceiverStatusResponseDto
 import it.pagopa.wallet.eventdispatcher.service.EventReceiverService
-import it.pagopa.wallet.eventdispatcher.service.InboundChannelAdapterLifecycleHandlerService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
@@ -14,9 +13,6 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class EventReceiversApiController(
     @Autowired private val eventReceiverService: EventReceiverService,
-    @Autowired
-    private val inboundChannelAdapterLifecycleHandlerService:
-        InboundChannelAdapterLifecycleHandlerService
 ) : EventReceiversApi {
 
     /** Handle new receiver command */
