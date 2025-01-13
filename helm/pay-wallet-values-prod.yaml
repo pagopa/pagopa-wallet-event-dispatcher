@@ -96,6 +96,7 @@ microservice-chart:
     REDIS_STREAM_EVENT_CONTROLLER_STREAM_KEY: "wallet-event-dispatcher-commands"
     REDIS_STREAM_EVENT_CONTROLLER_CONSUMER_NAME_PREFIX: "event-dispatcher"
     EVENT_CONTROLLER_STATUS_POLLING_CHRON: "*/10 * * * * *"
+    DEPLOYMENT_VERSION: "PROD"
   envSecret:
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     WALLET_STORAGE_QUEUE_KEY: wallet-storage-account-key
