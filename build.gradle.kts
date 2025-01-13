@@ -22,6 +22,9 @@ object Deps {
   const val mockWebServer = "4.12.0"
   const val openTelemetryVersion = "1.37.0"
   const val openTelemetryInstrumentationVersion = "2.3.0-alpha"
+  const val mockitoInline = "5.2.0"
+  const val reactorKafka = "1.3.23"
+  const val swaggerAnnotations = "2.2.8"
 }
 
 plugins {
@@ -65,7 +68,6 @@ dependencyManagement {
 
 dependencies {
   implementation("com.azure.spring:spring-cloud-azure-starter")
-  implementation("com.azure.spring:spring-cloud-azure-starter-data-cosmos")
   implementation("io.projectreactor:reactor-core")
 
   // spring integration
@@ -79,6 +81,7 @@ dependencies {
 
   implementation("org.springframework.boot:spring-boot-starter-actuator")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
+  implementation("org.springframework.boot:spring-boot-starter-data-redis")
   implementation("com.google.code.findbugs:jsr305:${Deps.googleFindBugs}")
   implementation("org.projectlombok:lombok")
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
@@ -104,23 +107,24 @@ dependencies {
   implementation("org.openapitools:openapi-generator-gradle-plugin:${Deps.openapiGenerator}")
   implementation("org.openapitools:jackson-databind-nullable:${Deps.openapiDataBinding}")
   implementation("jakarta.xml.bind:jakarta.xml.bind-api")
+  implementation("io.swagger.core.v3:swagger-annotations:${Deps.swaggerAnnotations}")
+
+  // Azure Event Hubs (Kafka)
+  implementation("org.springframework.kafka:spring-kafka")
+  implementation("org.apache.kafka:kafka-clients")
+  implementation("io.projectreactor.kafka:reactor-kafka:${Deps.reactorKafka}")
 
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
   runtimeOnly("org.springframework.boot:spring-boot-devtools")
   testImplementation("org.springframework.boot:spring-boot-starter-test")
-  testImplementation("org.mockito:mockito-inline:5.2.0")
+  testImplementation("org.mockito:mockito-inline:${Deps.mockitoInline}")
   testImplementation("io.projectreactor:reactor-test")
   // Kotlin dependencies
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
   testImplementation("org.mockito.kotlin:mockito-kotlin:${Deps.mockitoKotlin}")
 
   testImplementation("com.squareup.okhttp3:mockwebserver:${Deps.mockWebServer}")
-
-  // Azure Event Hubs (Kafka)
-  implementation("org.springframework.kafka:spring-kafka")
-  implementation("org.apache.kafka:kafka-clients")
-  implementation("io.projectreactor.kafka:reactor-kafka:1.3.23")
 }
 
 configurations {
@@ -157,7 +161,7 @@ tasks.create("applySemanticVersionPlugin") {
 }
 
 tasks.withType<KotlinCompile> {
-  dependsOn("walletsApi")
+  dependsOn("walletsApi", "eventDispatcherApi")
   kotlinOptions.jvmTarget = "17"
 }
 
@@ -246,4 +250,36 @@ tasks.register<GenerateTask>("walletsApi") {
       "useOneOfInterfaces" to "true"
     )
   )
+}
+
+tasks.register<GenerateTask>("eventDispatcherApi") {
+  description = "Generate API client based on Payment wallet event dispatcher OpenAPI spec"
+  group = "openapi-generate"
+
+  generatorName = "kotlin-spring"
+  inputSpec = "$projectDir/api-spec/event-dispatcher-api.yaml"
+  outputDir = layout.buildDirectory.dir("generated").get().asFile.path
+  apiPackage = "it.pagopa.generated.paymentwallet.eventdispatcher.server.api"
+  modelPackage = "it.pagopa.generated.paymentwallet.eventdispatcher.server.model"
+  generateApiTests = false
+  generateApiDocumentation = false
+  generateModelTests = false
+  library = "spring-boot"
+  modelNameSuffix = "Dto"
+  configOptions =
+    mapOf(
+      "swaggerAnnotations" to "false",
+      "openApiNullable" to "true",
+      "interfaceOnly" to "true",
+      "hideGenerationTimestamp" to "true",
+      "skipDefaultInterface" to "true",
+      "useSwaggerUI" to "false",
+      "reactive" to "true",
+      "useSpringBoot3" to "true",
+      "oas3" to "true",
+      "generateSupportingFiles" to "false",
+      "enumPropertyNaming" to "UPPERCASE",
+      "useJakartaEe" to "true",
+      "useOneOfInterfaces" to "true"
+    )
 }
