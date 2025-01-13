@@ -78,7 +78,7 @@ steps:
         inputs:
           targetType: 'inline'
           script: |
-            for i in helm/values-*.yaml; do
+            for i in helm/pay-wallet-values-*.yaml; do
               [ -f "$i" ] || break
               yq -i ".microservice-chart.image.tag = \"$(next_version_app.value)\"" "$i"
               git add "$i"
