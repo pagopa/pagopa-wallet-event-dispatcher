@@ -4,7 +4,7 @@ microservice-chart:
   fullnameOverride: "pagopa-pay-wallet-event-dispatcher-microservice"
   image:
     repository: pagopauitncoreacr.azurecr.io/pagopapaymentwalleteventdispatcherservice
-    tag: "0.8.0"
+    tag: "0.8.1"
     pullPolicy: Always
   livenessProbe:
     httpGet:
@@ -29,7 +29,7 @@ microservice-chart:
       - 8080
   ingress:
     create: true
-    host: "itnuat.wallet.internal.uat.platform.pagopa.it"
+    host: "itnuat.pay-wallet.internal.uat.platform.pagopa.it"
     path: /pagopa-wallet-event-dispatcher-service/(.*)
     servicePort: 8080
   serviceAccount:
