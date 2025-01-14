@@ -29,14 +29,14 @@ microservice-chart:
       - 8080
   ingress:
     create: true
-    host: "itnuat.wallet.internal.uat.platform.pagopa.it"
+    host: "itnuat.pay-wallet.internal.uat.platform.pagopa.it"
     path: /pagopa-wallet-event-dispatcher-service/(.*)
     servicePort: 8080
   serviceAccount:
     create: false
-    annotations: {}
+    annotations: { }
     name: ""
-  podAnnotations: {}
+  podAnnotations: { }
   podSecurityContext:
     seccompProfile:
       type: RuntimeDefault
@@ -103,7 +103,7 @@ microservice-chart:
   keyvault:
     name: "pagopa-u-pay-wallet-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-  nodeSelector: {}
+  nodeSelector: { }
   canaryDelivery:
     create: false
     ingress:
@@ -123,7 +123,7 @@ microservice-chart:
         WALLET_USAGE_QUEUE_NAME: "pagopa-u-itn-pay-wallet-usage-update-queue-b"
         WALLET_EXPIRATION_QUEUE_NAME: "pagopa-u-itn-pay-wallet-expiration-queue-b"
         WALLET_SERVICE_URI: "http://beta-pagopa-pay-wallet-microservice.pay-wallet.svc:8080"
-      envSecret: {}
+      envSecret: { }
   tolerations:
     - effect: "NoSchedule"
       key: "paymentWalletOnly"
@@ -145,5 +145,5 @@ microservice-chart:
             labelSelector:
               matchLabels:
                 aadpodidbinding: pay-wallet-pod-identity
-            namespaces: ["pay-wallet"]
+            namespaces: [ "pay-wallet" ]
             topologyKey: topology.kubernetes.io/zone
