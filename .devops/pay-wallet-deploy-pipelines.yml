@@ -144,12 +144,12 @@ stages:
     dependsOn: [ ]
     condition:
       and(
-        succeeded(),
-        eq(${{parameters.UAT_PROD_DEPLOY}}, true),
-        or(
-         eq(variables['Build.SourceBranch'], 'refs/heads/main'),
-         startsWith(variables['Build.SourceBranch'], 'refs/tags')
-        )
+      succeeded(),
+      eq(${{parameters.UAT_PROD_DEPLOY}}, true),
+      or(
+      eq(variables['Build.SourceBranch'], 'refs/heads/main'),
+      startsWith(variables['Build.SourceBranch'], 'refs/tags')
+      )
       )
     jobs:
       - job: "build"
@@ -169,8 +169,8 @@ stages:
     dependsOn: Build_release_candidate
     condition:
       and(
-        succeeded(),
-        eq(${{parameters.UAT_SKIP_BLUE_DEPLOYMENT}}, False)
+      succeeded(),
+      eq(${{parameters.UAT_SKIP_BLUE_DEPLOYMENT}}, False)
       )
     variables:
       green_app_version: $[ stageDependencies.Build_release_candidate.build.outputs['chart_current_version.appVersion'] ]
@@ -291,7 +291,8 @@ stages:
           )
        )
     variables:
-      app_version: $[ stageDependencies.Release.make_release.outputs['chart_current_version.appVersion'] ]
+      app_version: $[ stageDependencies.Release.make_release.outputs['chart_current_version.appVersion'] ] #chart app version, can differ from release for chart only version bumps
+      release_version: $[ stageDependencies.Release.make_release.outputs['chart_current_version.version'] ] #chart version, this version is the same of the github release/tag
     jobs:
       - deployment: "Green_deployment"
         displayName: "Green deployment"
@@ -304,6 +305,12 @@ stages:
               steps:
                 - checkout: self
                   displayName: "Checkout"
+                  # without the below checkout git head is set on the commit before release version bump
+                  # so deployed helm release have the previous version instead of the app one
+                - script: |
+                    checkoutVersion=$(release_version)
+                    echo "Checkout release version repo tag: [$checkoutVersion]" 
+                    git checkout $checkoutVersion
                 - task: KubectlInstaller@0
                 - task: Bash@3
                   name: update_chart_version
@@ -442,7 +449,7 @@ stages:
       condition: |
         and(
           eq(${{parameters.UAT_PROD_DEPLOY}}, true),
-          in(dependencies.Prod_WaitForApproval.result, 'Succeeded')
+          eq(dependencies.Prod_WaitForApproval.result, 'Succeeded')
         )
     ${{ if eq(parameters['PROD_SKIP_BLUE_DEPLOYMENT'], False) }}:
       dependsOn: Deploy_PROD_Blue
@@ -509,7 +516,8 @@ stages:
         in(dependencies.Release.result, 'Succeeded', 'Skipped')
       )
     variables:
-      prod_version: $[ stageDependencies.Release.make_release.outputs['chart_current_version.appVersion'] ]
+      prod_version: $[ stageDependencies.Release.make_release.outputs['chart_current_version.appVersion'] ] #chart app version, can differ from release for chart only version bumps
+      release_version: $[ stageDependencies.Release.make_release.outputs['chart_current_version.version'] ] #chart version, this version is the same of the github release/tag
     jobs:
       - deployment: "Green_PROD_deployment"
         displayName: "Green PROD deployment"
@@ -522,6 +530,13 @@ stages:
               steps:
                 - checkout: self
                   displayName: "Checkout"
+                  # without the below checkout git head is set on the commit before release version bump
+                  # so deployed helm release have the previous version instead of the app one
+                - script: |
+                    checkoutVersion=$(release_version)
+                    echo "Checkout release version repo tag: [$checkoutVersion]" 
+                    git checkout $checkoutVersion
+                  displayName: 'Checkout release tag [$(currentVersion)]'
                 - task: Bash@3
                   name: update_chart_version
                   displayName: 'Setup helm microservice chart'

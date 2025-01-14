@@ -1,9 +1,9 @@
 package it.pagopa.wallet.eventdispatcher
 
+import it.pagopa.wallet.eventdispatcher.configuration.properties.RedisStreamEventControllerConfigs
 import it.pagopa.wallet.eventdispatcher.configuration.properties.RetrySendPolicyConfig
 import it.pagopa.wallet.eventdispatcher.configuration.properties.WalletCDCConfiguration
 import it.pagopa.wallet.eventdispatcher.configuration.properties.WalletsApiConfiguration
-import java.util.*
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
@@ -15,7 +15,8 @@ import reactor.core.publisher.Hooks
 @EnableConfigurationProperties(
     WalletsApiConfiguration::class,
     WalletCDCConfiguration::class,
-    RetrySendPolicyConfig::class
+    RetrySendPolicyConfig::class,
+    RedisStreamEventControllerConfigs::class
 )
 class WalletEventDispatcherApplication
 

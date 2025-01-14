@@ -89,10 +89,17 @@ microservice-chart:
     WALLET_CDC_QUEUE_NAME: "pagopa-d-itn-pay-wallet-cdc-queue"
     WALLET_CDC_QUEUE_POLLING_MAX_MESSAGE_PER_POLL: "30"
     WALLET_CDC_QUEUE_POLLING_FIXED_DELAY_MS: "1000"
+    REDIS_HOST: pagopa-d-itn-pay-wallet-redis.redis.cache.windows.net
+    REDIS_PORT: "6380"
+    REDIS_SSL_ENABLED: "true"
+    REDIS_STREAM_EVENT_CONTROLLER_STREAM_KEY: "wallet-event-dispatcher-commands"
+    REDIS_STREAM_EVENT_CONTROLLER_CONSUMER_NAME_PREFIX: "event-dispatcher"
+    EVENT_CONTROLLER_STATUS_POLLING_CHRON: "*/10 * * * * *"
   envSecret:
     OTEL_EXPORTER_OTLP_HEADERS: elastic-otel-token-header
     WALLET_STORAGE_QUEUE_KEY: wallet-storage-account-key
     AZURE_EVENTHUB_CONNECTION_STRING: sender-evt-tx-event-hub-connection-string
+    REDIS_PASSWORD: redis-wallet-password
   keyvault:
     name: "pagopa-d-pay-wallet-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"

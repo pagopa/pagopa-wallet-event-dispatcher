@@ -53,27 +53,34 @@ to get a good default configuration.
 
 If you want to customize the application environment, reference this table:
 
-| Variable name                                        | Description                                                                                | type   | default                 |
-|------------------------------------------------------|--------------------------------------------------------------------------------------------|--------|-------------------------|
-| DEFAULT_LOGGING_LEVEL                                | Application root logging level                                                             | string | INFO                    |
-| APP_LOGGING_LEVEL                                    | Application specific logging level                                                         | string | INFO                    |
-| WALLET_STORAGE_QUEUE_KEY                             | Azure wallet storage queue account key                                                     | string |                         |
-| WALLET_STORAGE_QUEUE_ACCOUNT_NAME                    | Azure wallet storage queue account name                                                    | string |                         |
-| WALLET_STORAGE_QUEUE_ENDPOINT                        | Azure wallet storage queue endpoint                                                        | string |                         |
-| WALLET_USAGE_QUEUE_NAME                              | Storage queue name for event sent to notify wallet usage                                   | string | wallet-usage-queue      |
-| WALLET_EXPIRATION_QUEUE_NAME                         | Storage queue name for event sent to notify wallet onboarding process expiration           | string | wallet-expiration-queue |
-| WALLET_EXPIRATION_QUEUE_POLLING_MAX_MESSAGE_PER_POLL | Max message to be retrieved from `WALLET_EXPIRATION_QUEUE_NAME` for each poll iteration    | number | 10                      |
-| WALLET_EXPIRATION_QUEUE_POLLING_FIXED_DELAY_MS       | Polling fixed delay in millis used when retrieve event from `WALLET_EXPIRATION_QUEUE_NAME` | number | 1000                    |
-| WALLET_SERVICE_URI                                   | Wallet service endpoint                                                                    | string |                         |
-| WALLET_SERVICE_READ_TIMEOUT                          | Wallet service read timeout                                                                | number | 10000                   |
-| WALLET_SERVICE_CONNECTION_TIMEOUT                    | Wallet service connection timeout                                                          | number | 10000                   |
-| AZURE_EVENTHUB_CONNECTION_STRING                     | Azure event hub connection string                                                          | string |                         |
-| AZURE_EVENTHUB_TOPIC_NAME                            | Azure event hub topic name                                                                 | string |                         |
-| AZURE_EVENTHUB_BOOTSTRAP_SERVER                      | Azure event hub bootstrap server                                                           | string |                         |
-| CDC_SEND_RETRY_MAX_ATTEMPTS                          | Max configurable attempts for performing the logic business related to a change event      | number |                         |                               
-| CDC_SEND_RETRY_INTERVAL_IN_MS                        | Configurable interval in milliseconds between retries attempts                             | number |                         |
-| WALLET_CDC_QUEUE_NAME                                | Storage queue name for event sent by cdc hub                                               | string | wallet-cdc-queue        |
-
+| Variable name                                        | Description                                                                                | type    | default                 |
+|------------------------------------------------------|--------------------------------------------------------------------------------------------|---------|-------------------------|
+| DEFAULT_LOGGING_LEVEL                                | Application root logging level                                                             | string  | INFO                    |
+| APP_LOGGING_LEVEL                                    | Application specific logging level                                                         | string  | INFO                    |
+| WALLET_STORAGE_QUEUE_KEY                             | Azure wallet storage queue account key                                                     | string  |                         |
+| WALLET_STORAGE_QUEUE_ACCOUNT_NAME                    | Azure wallet storage queue account name                                                    | string  |                         |
+| WALLET_STORAGE_QUEUE_ENDPOINT                        | Azure wallet storage queue endpoint                                                        | string  |                         |
+| WALLET_USAGE_QUEUE_NAME                              | Storage queue name for event sent to notify wallet usage                                   | string  | wallet-usage-queue      |
+| WALLET_EXPIRATION_QUEUE_NAME                         | Storage queue name for event sent to notify wallet onboarding process expiration           | string  | wallet-expiration-queue |
+| WALLET_EXPIRATION_QUEUE_POLLING_MAX_MESSAGE_PER_POLL | Max message to be retrieved from `WALLET_EXPIRATION_QUEUE_NAME` for each poll iteration    | number  | 10                      |
+| WALLET_EXPIRATION_QUEUE_POLLING_FIXED_DELAY_MS       | Polling fixed delay in millis used when retrieve event from `WALLET_EXPIRATION_QUEUE_NAME` | number  | 1000                    |
+| WALLET_SERVICE_URI                                   | Wallet service endpoint                                                                    | string  |                         |
+| WALLET_SERVICE_READ_TIMEOUT                          | Wallet service read timeout                                                                | number  | 10000                   |
+| WALLET_SERVICE_CONNECTION_TIMEOUT                    | Wallet service connection timeout                                                          | number  | 10000                   |
+| AZURE_EVENTHUB_CONNECTION_STRING                     | Azure event hub connection string                                                          | string  |                         |
+| AZURE_EVENTHUB_TOPIC_NAME                            | Azure event hub topic name                                                                 | string  |                         |
+| AZURE_EVENTHUB_BOOTSTRAP_SERVER                      | Azure event hub bootstrap server                                                           | string  |                         |
+| CDC_SEND_RETRY_MAX_ATTEMPTS                          | Max configurable attempts for performing the logic business related to a change event      | number  |                         |                               
+| CDC_SEND_RETRY_INTERVAL_IN_MS                        | Configurable interval in milliseconds between retries attempts                             | number  |                         |
+| WALLET_CDC_QUEUE_NAME                                | Storage queue name for event sent by cdc hub                                               | string  | wallet-cdc-queue        |
+| REDIS_STREAM_EVENT_CONTROLLER_STREAM_KEY             | Event (receivers) controller redis stream key                                              | string  |                         |
+| REDIS_STREAM_EVENT_CONTROLLER_CONSUMER_NAME_PREFIX   | Event (receivers) controller redis stream consumer name prefix                             | string  |                         |
+| EVENT_CONTROLLER_STATUS_POLLING_CHRON                | Chron used to schedule event receivers status polling                                      | string  |                         |
+| DEPLOYMENT_VERSION                                   | Env property used to identify deployment version (STAGING/PROD)                            | string  | PROD                    |
+| REDIS_HOST                                           | Redis hostname                                                                             | string  |                         |
+| REDIS_PASSWORD                                       | Redis port                                                                                 | string  |                         |
+| REDIS_PORT                                           | Redis password                                                                             | number  |                         |
+| REDIS_SSL_ENABLED                                    | Boolean value indicating if SSL is enabled for connection to redis                         | boolean |                         |
 
 ### Run docker container
 
