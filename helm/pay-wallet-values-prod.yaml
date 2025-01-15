@@ -10,14 +10,14 @@ microservice-chart:
     httpGet:
       path: /actuator/health/liveness
       port: 8080
-    initialDelaySeconds: 120
+    initialDelaySeconds: 30
     failureThreshold: 6
     periodSeconds: 10
   readinessProbe:
     httpGet:
       path: /actuator/health/readiness
       port: 8080
-    initialDelaySeconds: 120
+    initialDelaySeconds: 30
     failureThreshold: 6
     periodSeconds: 10
   deployment:
@@ -35,9 +35,9 @@ microservice-chart:
     servicePort: 8080
   serviceAccount:
     create: false
-    annotations: {}
+    annotations: { }
     name: ""
-  podAnnotations: {}
+  podAnnotations: { }
   podSecurityContext:
     seccompProfile:
       type: RuntimeDefault
@@ -49,22 +49,32 @@ microservice-chart:
       cpu: "300m"
     limits:
       memory: "512Mi"
-      cpu: "300m"
+      cpu: "900m"
+  strategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxSurge: "100%"
+      maxUnavailable: "100%"
   autoscaling:
     enable: true
     minReplica: 3
     maxReplica: 10
     pollingInterval: 30 # seconds
-    cooldownPeriod: 300 # seconds
+    cooldownPeriod: 30 # seconds
     triggers:
       - type: cpu
         metadata:
           # Required
           type: Utilization # Allowed types are 'Utilization' or 'AverageValue'
           value: "75"
+    advanced:
+      horizontalPodAutoscalerConfig:
+        behavior:
+          scaleUp:
+            stabilizationWindowSeconds: 60
   envConfig:
     ENV: 'prod'
-    APP_LOGGING_LEVEL: 'DEBUG'
+    APP_LOGGING_LEVEL: 'INFO'
     DEFAULT_LOGGING_LEVEL: 'INFO'
     OTEL_SERVICE_NAME: "pagopa-payment-wallet-event-dispatcher-service"
     OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=prod"
@@ -105,7 +115,7 @@ microservice-chart:
   keyvault:
     name: "pagopa-p-pay-wallet-kv"
     tenantId: "7788edaf-0346-4068-9d79-c868aed15b3d"
-  nodeSelector: {}
+  nodeSelector: { }
   canaryDelivery:
     create: false
     ingress:
@@ -120,8 +130,8 @@ microservice-chart:
         repository: pagopapitncoreacr.azurecr.io/pagopawalleteventdispatcher
         tag: "latest"
         pullPolicy: Always
-      envConfig: {}
-      envSecret: {}
+      envConfig: { }
+      envSecret: { }
   tolerations:
     - effect: "NoSchedule"
       key: "paymentWalletOnly"
@@ -143,5 +153,5 @@ microservice-chart:
             labelSelector:
               matchLabels:
                 aadpodidbinding: pay-wallet-pod-identity
-            namespaces: ["pay-wallet"]
+            namespaces: [ "pay-wallet" ]
             topologyKey: topology.kubernetes.io/zone
