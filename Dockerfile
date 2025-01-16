@@ -1,4 +1,4 @@
-FROM amazoncorretto:17-alpine as build
+FROM amazoncorretto:17-alpine@sha256:4a15f2510de3398f2434c896a5cde66d369ff81383470b3a5aee5a06b0228e89 as build
 WORKDIR /workspace/app
 
 COPY gradlew .
@@ -14,7 +14,7 @@ COPY src src
 RUN ./gradlew build -x test
 RUN mkdir build/extracted && java -Djarmode=layertools -jar build/libs/*.jar extract --destination build/extracted
 
-FROM amazoncorretto:17-alpine
+FROM amazoncorretto:17-alpine@sha256:4a15f2510de3398f2434c896a5cde66d369ff81383470b3a5aee5a06b0228e89
 
 RUN addgroup --system user && adduser --ingroup user --system user
 USER user:user
